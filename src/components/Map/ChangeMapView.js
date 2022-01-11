@@ -1,11 +1,13 @@
 import { useMap } from 'react-leaflet';
 import { useEffect, useContext, useRef } from 'react';
-import { ClickContext } from '../../pages';
-export default function ChangeMapView({ bounds, country }) {
+import { ClickContext, CountryContext } from '../../pages';
+export default function ChangeMapView({ bounds }) {
   const { clicked, setClicked } = useContext(ClickContext);
+  const country = useContext(CountryContext);
   const map = useMap();
   const boundsRef = useRef(bounds);
   const countryRef = useRef(country);
+  
   useEffect(
     () => {
       if (

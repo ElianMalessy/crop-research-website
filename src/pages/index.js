@@ -18,11 +18,13 @@ import {
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 
 export const ClickContext = createContext();
+export const CountryContext = createContext();
 export default function Home() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [country, setCountry] = useState();
   const [crop, setCrop] = useState();
-  const [clicked, setClicked] = useState(false);
+  const [clicked, setClicked] = useState();
+  const [enhance, setEnhance] = useState();
 
   return (
     <Flex w='100%' h='100%' style={{ padding: '1rem' }}>
@@ -30,16 +32,21 @@ export default function Home() {
         <title>Create Next App</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Grid templateColumns='repeat(16, 1fr)' gap={4} w='100%'>
+      <Grid templateColumns='repeat(20, 1fr)' gap={4} w='100%'>
         <GridItem w='100%'>
           <Button onClick={toggleColorMode}> {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}</Button>
         </GridItem>
-        <GridItem w='100%' colSpan={8}>
-          <ClickContext.Provider value={{ clicked, setClicked }}>
-            <Map country={country} />
-          </ClickContext.Provider>
+        <GridItem w='100%' colSpan={10}>
+          <CountryContext.Provider value={country}>
+            <ClickContext.Provider value={{ clicked, setClicked }}>
+              <Map enhance={enhance} />
+            </ClickContext.Provider>
+          </CountryContext.Provider>
         </GridItem>
-        <GridItem w='100%' colSpan={1} />
+        <GridItem w='100%' colSpan={1}>
+          <Button onClick={() => setEnhance(enhance === true ? false : true)}>Toggle Enhance</Button>
+        </GridItem>
+        <GridItem w='100%' colSpan={4} />
         <GridItem w='100%' colSpan={4}>
           <SimpleGrid columns={2} spacing={2}>
             <Menu>

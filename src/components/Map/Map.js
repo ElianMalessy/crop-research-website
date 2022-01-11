@@ -1,15 +1,18 @@
 import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, Rectangle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
-import { useState, Fragment, useEffect, useRef } from 'react';
+import { useState, Fragment, useEffect, useContext } from 'react';
 import ChangeMapView from './ChangeMapView';
+import NigeriaMapData from '../Json/NGA1.json';
+import EnhancedNigeriaMapData from '../Json/NGA2.json';
+import { CountryContext } from '../../pages';
 
-export default function Map({ country }) {
+export default function Map({ enhance }) {
   const [locations, setLocations] = useState([]);
   const [coordinates, setCoordinates] = useState([8.10027290601264, 9.59981617681184]);
   const [bounds, setBounds] = useState([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
-
+  const country = useContext(CountryContext);
   useEffect(
     () => {
       const LeafIcon = L.Icon.extend({
@@ -49,6 +52,14 @@ export default function Map({ country }) {
     [country]
   );
 
+  function onEachRegion(country, layer) {
+    const props = country.properties;
+    const message = ` maize:${props.maize} cowpea:${props.cowpea} cassava:${props.cassava} rice:${props.rice}`;
+    layer.bindPopup(props.NAME_2 ? props.NAME_2 : props.NAME_1 + message);
+  }
+  const GJSON = ({ data }) => {
+    return <GeoJSON onEachFeature={onEachRegion} data={data} />;
+  };
   return (
     <MapContainer className={styles.homeMap} center={coordinates} zoom={5} bounds={bounds}>
       <Fragment>
@@ -64,6 +75,10 @@ export default function Map({ country }) {
               </Marker>
             );
           })}
+        {country === 'Nigeria' && !enhance && <GJSON onEachFeature={onEachRegion} data={NigeriaMapData.features} />}
+        {country === 'Nigeria' &&
+        enhance && <GJSON onEachFeature={onEachRegion} data={EnhancedNigeriaMapData.features} />}
+
         <ChangeMapView bounds={bounds} country={country} />
       </Fragment>
     </MapContainer>
