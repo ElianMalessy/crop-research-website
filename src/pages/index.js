@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <Flex w='100%' h='100%' style={{ padding: '1rem' }}>
       <Head>
-        <title>Create Next App</title>
+        <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Grid templateColumns='repeat(20, 1fr)' gap={4} w='100%'>
@@ -85,9 +85,10 @@ export default function Home() {
                 Crops
               </MenuButton>
               <MenuList>
-                <MenuItem onClick={() => setCrop('m1')}>Maize 1</MenuItem>
-                <MenuItem onClick={() => setCrop('m1')}>Maize 2</MenuItem>
-                <MenuItem onClick={() => setCrop('m1')}>Maize 3</MenuItem>
+                <MenuItem onClick={() => setCrop('Maize')}>Maize</MenuItem>
+                <MenuItem onClick={() => setCrop('Cowpea')}>Cowpea</MenuItem>
+                <MenuItem onClick={() => setCrop('Cassava')}>Cassava</MenuItem>
+                <MenuItem onClick={() => setCrop('Rice')}>Rice</MenuItem>
               </MenuList>
             </Menu>
           </SimpleGrid>

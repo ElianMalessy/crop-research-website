@@ -4,6 +4,8 @@ import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useContext } from 'react';
 import ChangeMapView from './ChangeMapView';
+import KenyaMapData from '../Json/Kenya_1.json';
+import EnhancedKenyaMapData from '../Json/Kenya_2.json';
 import NigeriaMapData from '../Json/NGA1.json';
 import EnhancedNigeriaMapData from '../Json/NGA2.json';
 import { CountryContext } from '../../pages';
@@ -19,10 +21,14 @@ export default function Map({ enhance }) {
         options: {}
       });
       const blueIcon = new LeafIcon({
-          iconUrl: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|abcdef&chf=a,s,ee00FFFF'
+          iconUrl: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|abcdef&chf=a,s,ee00FFFF',
+          iconSize: [20, 35],
+          iconAnchor: [10, 35]
         }),
         redIcon = new LeafIcon({
-          iconUrl: 'https://i.stack.imgur.com/ffAqZ.png'
+          iconUrl: 'https://i.stack.imgur.com/ffAqZ.png',
+          iconSize: [20, 35],
+          iconAnchor: [10, 35]
         });
       if (!country) return;
       switch (country[0]) {
@@ -54,8 +60,12 @@ export default function Map({ enhance }) {
 
   function onEachRegion(country, layer) {
     const props = country.properties;
-    const message = ` maize:${props.maize} cowpea:${props.cowpea} cassava:${props.cassava} rice:${props.rice}`;
-    layer.bindPopup(props.NAME_2 ? props.NAME_2 : props.NAME_1 + message);
+
+    layer.bindPopup(
+      `<dl> <span style="font-weight: 600">${props.NAME_2
+        ? props.NAME_2
+        : props.NAME_1}</span> <dd>crops (1000 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> </dl>`
+    );
   }
   const GJSON = ({ data }) => {
     return <GeoJSON onEachFeature={onEachRegion} data={data} />;
@@ -75,9 +85,10 @@ export default function Map({ enhance }) {
               </Marker>
             );
           })}
-        {country === 'Nigeria' && !enhance && <GJSON onEachFeature={onEachRegion} data={NigeriaMapData.features} />}
-        {country === 'Nigeria' &&
-        enhance && <GJSON onEachFeature={onEachRegion} data={EnhancedNigeriaMapData.features} />}
+        {country === 'Nigeria' && !enhance && <GJSON data={NigeriaMapData.features} />}
+        {country === 'Nigeria' && enhance && <GJSON data={EnhancedNigeriaMapData.features} />}
+        {country === 'Kenya' && !enhance && <GJSON data={KenyaMapData.features} />}
+        {country === 'Kenya' && enhance && <GJSON data={EnhancedKenyaMapData.features} />}
 
         <ChangeMapView bounds={bounds} country={country} />
       </Fragment>

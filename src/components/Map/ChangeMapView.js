@@ -7,9 +7,10 @@ export default function ChangeMapView({ bounds }) {
   const map = useMap();
   const boundsRef = useRef(bounds);
   const countryRef = useRef(country);
-  
+
   useEffect(
     () => {
+      console.log(clicked, country, countryRef === country, boundsRef.current === bounds);
       if (
         clicked === true &&
         ((boundsRef.current !== bounds && countryRef.current !== country) ||
