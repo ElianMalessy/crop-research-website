@@ -10,7 +10,6 @@ export default function ChangeMapView({ bounds }) {
 
   useEffect(
     () => {
-      console.log(clicked, country, countryRef === country, boundsRef.current === bounds);
       if (
         clicked === true &&
         ((boundsRef.current !== bounds && countryRef.current !== country) ||
