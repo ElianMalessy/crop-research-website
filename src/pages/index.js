@@ -22,9 +22,13 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import DatePicker from '../components/data-picker';
+import axios from 'axios';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
+export const CropContext = createContext();
+export const DataContext = createContext();
+
 export default function Home() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [country, setCountry] = useState();
@@ -32,6 +36,15 @@ export default function Home() {
   const [clicked, setClicked] = useState();
   const [enhance, setEnhance] = useState();
   const [startDate, setStartDate] = useState(new Date());
+  const [data, setData] = useState();
+
+  useEffect(() => {
+    async function getData() {
+      const res = await axios.get('http://localhost:3000/api');
+      setData(res.data);
+    }
+    getData();
+  }, []);
 
   return (
     <Flex w='100%' h='100%' style={{ padding: '1rem' }}>
@@ -101,12 +114,15 @@ export default function Home() {
               </SimpleGrid>
             </GridItem>
           </Grid>
-
-          <CountryContext.Provider value={country}>
-            <ClickContext.Provider value={{ clicked, setClicked }}>
-              <Map enhance={enhance} />
-            </ClickContext.Provider>
-          </CountryContext.Provider>
+          <DataContext.Provider value={data}>
+            <CountryContext.Provider value={country}>
+              <CropContext.Provider value={crop}>
+                <ClickContext.Provider value={{ clicked, setClicked }}>
+                  <Map enhance={enhance} />
+                </ClickContext.Provider>
+              </CropContext.Provider>
+            </CountryContext.Provider>
+          </DataContext.Provider>
         </GridItem>
 
         <GridItem w='100%' />

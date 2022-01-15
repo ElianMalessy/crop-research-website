@@ -4,17 +4,16 @@ import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useContext } from 'react';
 import ChangeMapView from './ChangeMapView';
-import KenyaMapData from '../Json/Kenya_1.json';
-import EnhancedKenyaMapData from '../Json/Kenya_2.json';
-import NigeriaMapData from '../Json/NGA1.json';
-import EnhancedNigeriaMapData from '../Json/NGA2.json';
-import { CountryContext } from '../../pages';
+
+import { CountryContext, DataContext } from '../../pages';
 
 export default function Map({ enhance }) {
   const [locations, setLocations] = useState([]);
   const [coordinates, setCoordinates] = useState([8.10027290601264, 9.59981617681184]);
   const [bounds, setBounds] = useState([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
   const country = useContext(CountryContext);
+  const data = useContext(DataContext);
+
   useEffect(
     () => {
       const LeafIcon = L.Icon.extend({
@@ -85,10 +84,12 @@ export default function Map({ enhance }) {
               </Marker>
             );
           })}
-        {country === 'Nigeria' && !enhance && <GJSON data={NigeriaMapData.features} />}
-        {country === 'Nigeria' && enhance && <GJSON data={EnhancedNigeriaMapData.features} />}
-        {country === 'Kenya' && !enhance && <GJSON data={KenyaMapData.features} />}
-        {country === 'Kenya' && enhance && <GJSON data={EnhancedKenyaMapData.features} />}
+        {country === 'Nigeria' && !enhance && <GJSON data={data.Nigeria1} />}
+        {country === 'Nigeria' && enhance && <GJSON data={data.Nigeria2} />}
+        {country === 'Kenya' && !enhance && <GJSON data={data.Kenya1} />}
+        {country === 'Kenya' && enhance && <GJSON data={data.Kenya2} />}
+        {country === 'Ethiopia' && !enhance && <GJSON data={data.Ethiopia1} />}
+        {country === 'Ethiopia' && enhance && <GJSON data={data.Ethiopia2} />}
 
         <ChangeMapView bounds={bounds} country={country} />
       </Fragment>
