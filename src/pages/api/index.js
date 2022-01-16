@@ -1,7 +1,25 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import axios from 'axios';
+import Cors from 'cors';
+
+const cors = Cors({
+  methods: ['GET', 'HEAD']
+});
+
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
 
 async function handler(req, res) {
+  await runMiddleware(req, res, cors);
   try {
     const data = await axios
       .all([
