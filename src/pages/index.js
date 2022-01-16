@@ -36,7 +36,7 @@ export default function Home() {
 
   useEffect(() => {
     async function getData() {
-      const res = await axios.get('http://localhost:3000/api');
+      const res = await axios.get('/api');
       setData(res.data);
     }
     getData();
