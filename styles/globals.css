@@ -208,6 +208,3 @@ a {
 .react-datepicker__close-icon::after:hover {
   color: var(--gray);
 }
-.leaflet-popup {
-  margin-bottom: 2.5rem !important;
-}
