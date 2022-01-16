@@ -2,59 +2,64 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
-import { useState, Fragment, useEffect, useContext } from 'react';
+import { useState, Fragment, useEffect, useContext, useCallback } from 'react';
 import ChangeMapView from './ChangeMapView';
-
 import { CountryContext, DataContext } from '../../pages';
+import cropData from './data';
 
-export default function Map({ enhance }) {
+export default function Map({ enhance, date, filter }) {
   const [locations, setLocations] = useState([]);
-  const [coordinates, setCoordinates] = useState([8.10027290601264, 9.59981617681184]);
   const [bounds, setBounds] = useState([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
   const country = useContext(CountryContext);
   const data = useContext(DataContext);
 
+  const LeafIcon = L.Icon.extend({
+    options: {}
+  });
+  const blueIcon = new LeafIcon({
+      iconUrl: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|abcdef&chf=a,s,ee00FFFF',
+      iconSize: [20, 35],
+      iconAnchor: [10, 35]
+    }),
+    redIcon = new LeafIcon({
+      iconUrl: 'https://i.stack.imgur.com/ffAqZ.png',
+      iconSize: [20, 35],
+      iconAnchor: [10, 35]
+    });
+  const getCropsWithDate = useCallback(
+    (cropData) => {
+      const locations = [];
+      cropData.forEach((dataPoint) => {
+        if (!dataPoint[3]) locations.push(dataPoint);
+        else if (dataPoint[3] && new Date(dataPoint[3]) > date) {
+          locations.push(dataPoint);
+        }
+      });
+      return locations;
+    },
+    [date]
+  );
   useEffect(
     () => {
-      const LeafIcon = L.Icon.extend({
-        options: {}
-      });
-      const blueIcon = new LeafIcon({
-          iconUrl: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|abcdef&chf=a,s,ee00FFFF',
-          iconSize: [20, 35],
-          iconAnchor: [10, 35]
-        }),
-        redIcon = new LeafIcon({
-          iconUrl: 'https://i.stack.imgur.com/ffAqZ.png',
-          iconSize: [20, 35],
-          iconAnchor: [10, 35]
-        });
       if (!country) return;
       switch (country[0]) {
         case 'N':
-          setCoordinates([9.0765, 7.3986]);
-          setLocations([[8.7, 7.6, redIcon, 'not collected'], [10, 8.5, blueIcon, 'collected at ' + new Date()]]);
+          setLocations(getCropsWithDate(cropData.Ndata));
           setBounds([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
           break;
         case 'E':
-          setCoordinates([8.9806, 38.7578]);
-          setLocations([
-            [10.5, 39.2, blueIcon, 'collected at ' + new Date()],
-            [10, 37.9, blueIcon, 'collected at ' + new Date()]
-          ]);
+          setLocations(getCropsWithDate(cropData.Edata));
           setBounds([[3.41243791580195, 33.0021171569826], [14.8304491043093, 47.9582290649417]]);
-
           break;
         case 'K':
-          setCoordinates([-1.2921, 36.8219]);
-          setLocations([[-1.67, 35.9, blueIcon, 'collected at ' + new Date()], [-2.5, 37.2, redIcon, 'not collected']]);
+          setLocations(getCropsWithDate(cropData.Kdata));
           setBounds([[-4.66606140136707, 33.913948059082], [5.05815601348894, 41.9262161254886]]);
           break;
         default:
           break;
       }
     },
-    [country]
+    [country, getCropsWithDate]
   );
 
   function onEachRegion(country, layer) {
@@ -70,7 +75,7 @@ export default function Map({ enhance }) {
     return <GeoJSON onEachFeature={onEachRegion} data={data} />;
   };
   return (
-    <MapContainer className={styles.homeMap} center={coordinates} zoom={5} bounds={bounds}>
+    <MapContainer className={styles.homeMap} zoom={5} bounds={bounds}>
       <Fragment>
         <TileLayer
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -78,11 +83,24 @@ export default function Map({ enhance }) {
         />
         {locations &&
           locations.map((location, index) => {
-            return (
-              <Marker key={index} position={[location[0], location[1]]} icon={location[2]}>
-                <Popup>{location[3]}</Popup>
+            const popup = location[3]
+              ? filter !== 'nCollected' ? blueIcon : null
+              : filter === 'all' || filter === 'nCollected' ? redIcon : null;
+            return popup ? (
+              <Marker
+                key={index}
+                position={[location[0], location[1]]}
+                icon={
+                  location[3] ? (
+                    filter !== 'nCollected' && blueIcon
+                  ) : (
+                    (filter === 'all' || filter === 'nCollected') && redIcon
+                  )
+                }
+              >
+                <Popup>{location[3] ? location[2] + ' at ' + location[3] : location[2]}</Popup>
               </Marker>
-            );
+            ) : null;
           })}
         {country === 'Nigeria' && !enhance && <GJSON data={data.Nigeria1} />}
         {country === 'Nigeria' && enhance && <GJSON data={data.Nigeria2} />}

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDatePicker from 'react-datepicker';
 import { useColorMode } from '@chakra-ui/react';
-
 import 'react-datepicker/dist/react-datepicker.css';
 
 const DatePicker = ({ selectedDate, onChange, isClearable = false, showPopperArrow = false, ...props }) => {
