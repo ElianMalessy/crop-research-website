@@ -21,7 +21,6 @@ import {
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import axios from 'axios';
-import Cors from 'cors';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
@@ -38,13 +37,11 @@ export default function Home(props) {
   const [data, setData] = useState();
 
   const [tooltipIsOpen, setTooltipIsOpen] = useState(false);
-  const startingDateRef = useRef(new Date(new Date('01 Jan 2022').toDateString()));
-  const endingDateRef = useRef(new Date(new Date().toDateString()));
-  const [startDate, setStartDate] = useState(startingDateRef.current);
-  const [endDate, setEndDate] = useState(endingDateRef.current);
-  const dateDifference = useRef(
-    Math.floor((new Date(new Date().toDateString()) - new Date(new Date('01 Jan 2022').toDateString())) / 86400000)
-  );
+  const startingDate = new Date(new Date('2022-05-06').toDateString());
+  const endingDate = new Date(new Date('2022-08-09').toDateString());
+  const [startDate, setStartDate] = useState(startingDate);
+  const [endDate, setEndDate] = useState(endingDate);
+  const dateDifference = Math.floor(new Date(endingDate - startingDate) / 86400000);
 
   useEffect(() => {
     async function getData() {
@@ -57,7 +54,6 @@ export default function Home(props) {
     getData();
   }, []);
 
-  useEffect(() => console.log(dateDifference.current), []);
   useEffect(() => {
     const t = setTimeout(() => {
       setTooltipIsOpen(true);
@@ -113,7 +109,7 @@ export default function Home(props) {
                 </MenuList>
               </Menu>
             </GridItem>
-            <GridItem colSpan={3}>
+            <GridItem >
               <Menu>
                 <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
                   Boundaries
@@ -161,7 +157,7 @@ export default function Home(props) {
             <CountryContext.Provider value={country}>
               <CropContext.Provider value={crop}>
                 <ClickContext.Provider value={{ clicked, setClicked }}>
-                  <Map enhance={enhance} date={startDate} filter={filter} props={props} />
+                  <Map enhance={enhance} date={[startDate, endDate]} filter={filter} props={props} />
                 </ClickContext.Provider>
               </CropContext.Provider>
             </CountryContext.Provider>
@@ -173,24 +169,16 @@ export default function Home(props) {
             minW='12rem'
             w='12rem'
             mt='2rem'
-            defaultValue={[0, dateDifference.current]}
+            defaultValue={[0, dateDifference]}
             min={0}
-            max={dateDifference.current}
+            max={dateDifference}
             onChange={([val1, val2]) => {
-              setStartDate(
-                new Date(
-                  new Date(startingDateRef.current.setDate(startingDateRef.current.getDate() + val1)).toDateString()
-                )
-              );
+              setStartDate(new Date(new Date(startingDate.setDate(startingDate.getDate() + val1)).toDateString()));
               setEndDate(
-                new Date(
-                  new Date(
-                    endingDateRef.current.setDate(endingDateRef.current.getDate() + (val2 - dateDifference.current))
-                  ).toDateString()
-                )
+                new Date(new Date(endingDate.setDate(endingDate.getDate() + (val2 - dateDifference))).toDateString())
               );
-              startingDateRef.current = new Date(new Date('01 Jan 2022').toDateString());
-              endingDateRef.current = new Date(new Date().toDateString());
+              startingDate = new Date(new Date('01 Jan 2022').toDateString());
+              endingDate = new Date(new Date().toDateString());
             }}
           >
             <RangeSliderTrack bg='blue.100'>
@@ -212,7 +200,7 @@ export default function Home(props) {
               )}
             </Tooltip>
             <Tooltip
-              value={dateDifference.current}
+              value={dateDifference}
               hasArrow
               bg='blue.900'
               color='white'

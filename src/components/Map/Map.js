@@ -34,14 +34,14 @@ export default function Map({ enhance, date, filter, props }) {
           : country[0] === 'E' ? props.EthiopiaPoints : country[0] === 'T' ? props.TanzaniaPoints : null;
       if (!dataset) return;
       dataset.features.forEach((dataPoint) => {
-        locations.push(dataPoint.geometry.coordinates);
-        // if (dataPoint[3] && new Date(dataPoint[3]) <= date) {
-        //   locations.push(dataPoint);
-        // }
+        const dataDate = new Date(new Date(dataPoint.properties.date).toDateString());
+        if (dataDate >= date[0] && dataDate <= date[1]) {
+          locations.push(dataPoint.geometry.coordinates);
+        }
       });
       return locations;
     },
-    [country]
+    [country, date]
   );
   useEffect(
     () => {
