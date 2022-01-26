@@ -34,9 +34,9 @@ export default function Map({ enhance, date, filter, props }) {
           : country[0] === 'E' ? props.EthiopiaPoints : country[0] === 'T' ? props.TanzaniaPoints : null;
       if (!dataset) return;
       dataset.features.forEach((dataPoint) => {
-        const dataDate = new Date(new Date(dataPoint.properties.date).toDateString());
-        if (dataDate >= date[0] && dataDate <= date[1]) {
-          locations.push(dataPoint.geometry.coordinates);
+        const dataDate = new Date(dataPoint.properties.date);
+        if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
+          locations.push([dataPoint.geometry.coordinates, dataPoint.properties]);
         }
       });
       return locations;
@@ -66,19 +66,27 @@ export default function Map({ enhance, date, filter, props }) {
     [country, getCropsWithDate, props]
   );
 
-  function onEachRegion(country, layer) {
-    const props = country.properties;
+  function onEachRegion(currentCountry, layer) {
+    const props = currentCountry.properties;
     layer.bindPopup(
       `<dl> <span style="font-weight: 600">${props.NAME_2
         ? props.NAME_2
         : props.NAME_1 ? props.NAME_1 : props.NAME_0}</span>` +
-        (props.NAME_1
-          ? `<dd>crops (1000 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> </dl>`
-          : '')
+        (props.NAME_1 && country === 'Nigeria'
+          ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+          : country === 'Ethiopia'
+            ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>wheat: ${props.wheat}</dd> <dd> bean: ${props.bean}</dd> <dd> tef: ${props.tef}</dd> </dl>`
+            : country === 'Tanzania'
+              ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>bean: ${props.bean}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+              : '')
     );
   }
   const GJSON = ({ data }) => {
-    return <GeoJSON onEachFeature={onEachRegion} data={data} />;
+    return enhance === '0' ? (
+      <GeoJSON onEachFeature={onEachRegion} data={data} style={{ fillOpacity: 0 }} />
+    ) : (
+      <GeoJSON onEachFeature={onEachRegion} data={data} />
+    );
   };
 
   const [gJSONData, setGJSONData] = useState();
@@ -107,7 +115,7 @@ export default function Map({ enhance, date, filter, props }) {
             return (
               <Marker
                 key={index}
-                position={[location[1], location[0]]}
+                position={[location[0][1], location[0][0]]}
                 icon={
                   blueIcon
                   // location[3] ? (
@@ -118,7 +126,11 @@ export default function Map({ enhance, date, filter, props }) {
                 }
               >
                 <Popup>
-                  {'Location, found on DATE' /* location[3] ? location[2] + ' at ' + location[3] : location[2] */}
+                  <dl>
+                    {Object.keys(location[1]).map((key, index) => {
+                      return <dd key={index}>{`${key}: ${location[1][key]}`}</dd>;
+                    })}
+                  </dl>
                 </Popup>
               </Marker>
               //) : null;

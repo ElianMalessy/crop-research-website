@@ -37,11 +37,11 @@ export default function Home(props) {
   const [data, setData] = useState();
 
   const [tooltipIsOpen, setTooltipIsOpen] = useState(false);
-  const startingDate = new Date(new Date('2022-05-06').toDateString());
-  const endingDate = new Date(new Date('2022-08-09').toDateString());
+  const startingDate = new Date('2022-05-01').toGMTString();
+  const endingDate = new Date('2022-08-09').toGMTString();
   const [startDate, setStartDate] = useState(startingDate);
   const [endDate, setEndDate] = useState(endingDate);
-  const dateDifference = Math.floor(new Date(endingDate - startingDate) / 86400000);
+  const dateDifference = Math.floor(new Date(new Date(endingDate) - new Date(startingDate)) / 86400000);
 
   useEffect(() => {
     async function getData() {
@@ -109,7 +109,7 @@ export default function Home(props) {
                 </MenuList>
               </Menu>
             </GridItem>
-            <GridItem >
+            <GridItem>
               <Menu>
                 <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
                   Boundaries
@@ -173,12 +173,16 @@ export default function Home(props) {
             min={0}
             max={dateDifference}
             onChange={([val1, val2]) => {
-              setStartDate(new Date(new Date(startingDate.setDate(startingDate.getDate() + val1)).toDateString()));
-              setEndDate(
-                new Date(new Date(endingDate.setDate(endingDate.getDate() + (val2 - dateDifference))).toDateString())
+              setStartDate(
+                new Date(new Date(startingDate).setDate(new Date(startingDate).getDate() + val1)).toGMTString()
               );
-              startingDate = new Date(new Date('01 Jan 2022').toDateString());
-              endingDate = new Date(new Date().toDateString());
+              setEndDate(
+                new Date(
+                  new Date(endingDate).setDate(new Date(endingDate).getDate() + (val2 - dateDifference))
+                ).toGMTString()
+              );
+              startingDate = new Date('2022-05-01').toGMTString();
+              endingDate = new Date('2022-08-09').toGMTString();
             }}
           >
             <RangeSliderTrack bg='blue.100'>
@@ -191,7 +195,7 @@ export default function Home(props) {
               color='white'
               placement='top'
               isOpen={tooltipIsOpen}
-              label={startDate.toISOString().substring(0, 10)}
+              label={new Date(startDate).toISOString().substring(0, 10)}
             >
               {colorMode === 'light' ? (
                 <RangeSliderThumb index={0} bg='gray.800' />
@@ -206,7 +210,7 @@ export default function Home(props) {
               color='white'
               placement='bottom'
               isOpen={tooltipIsOpen}
-              label={endDate.toISOString().substring(0, 10)}
+              label={new Date(endDate).toISOString().substring(0, 10)}
             >
               {colorMode === 'light' ? (
                 <RangeSliderThumb index={1} bg='gray.800' />
