@@ -1,6 +1,6 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import Map from '../components/Map/index';
+import Histogram from '../components/Graph/Histogram';
 import styles from '../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useRef, createContext } from 'react';
 import {
@@ -164,7 +164,8 @@ export default function Home(props) {
           </DataContext.Provider>
         </GridItem>
         <GridItem colSpan={2} />
-        <GridItem>
+
+        <GridItem colSpan={12}>
           <RangeSlider
             minW='12rem'
             w='12rem'
@@ -219,6 +220,14 @@ export default function Home(props) {
               )}
             </Tooltip>
           </RangeSlider>
+
+          {country === 'Tanzania' ? (
+            <Histogram data={props.TanzaniaPoints} />
+          ) : country === 'Nigeria' ? (
+            <Histogram data={props.NigeriaPoints} />
+          ) : country === 'Ethiopia' ? (
+            <Histogram data={props.EthiopiaPoints} />
+          ) : null}
         </GridItem>
       </Grid>
     </Flex>
@@ -250,8 +259,6 @@ export async function getStaticProps() {
   }
 
   return {
-    props: { TanzaniaPoints, NigeriaPoints, EthiopiaPoints },
-
-    revalidate: 60
+    props: { TanzaniaPoints, NigeriaPoints, EthiopiaPoints }
   };
 }

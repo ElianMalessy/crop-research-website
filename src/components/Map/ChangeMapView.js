@@ -23,6 +23,5 @@ export default function ChangeMapView({ bounds }) {
     },
     [bounds, map, clicked, setClicked, country]
   );
-
   return null;
 }
