@@ -28,12 +28,12 @@ export default function Map({ enhance, date, filter, props }) {
   const getCropsWithDate = useCallback(
     (props) => {
       const locations = [];
-      const dataset =
+      const countryPoints =
         country[0] === 'N'
           ? props.NigeriaPoints
           : country[0] === 'E' ? props.EthiopiaPoints : country[0] === 'T' ? props.TanzaniaPoints : null;
-      if (!dataset) return;
-      dataset.features.forEach((dataPoint) => {
+      if (!countryPoints) return;
+      countryPoints.features.forEach((dataPoint) => {
         const dataDate = new Date(dataPoint.properties.date);
         if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
           locations.push([dataPoint.geometry.coordinates, dataPoint.properties]);
@@ -67,17 +67,17 @@ export default function Map({ enhance, date, filter, props }) {
   );
 
   function onEachRegion(currentCountry, layer) {
-    const props = currentCountry.properties;
+    const p = currentCountry.properties;
     layer.bindPopup(
-      `<dl> <span style="font-weight: 600">${props.NAME_2
-        ? props.NAME_2
-        : props.NAME_1 ? props.NAME_1 : props.NAME_0}</span>` +
-        (props.NAME_1 && country === 'Nigeria'
-          ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+      `<dl> <span style="font-weight: 600">${p.NAME_2
+        ? p.NAME_2
+        : p.NAME_1 ? p.NAME_1 : p.NAME_0}</span>` +
+        (p.NAME_1 && country === 'Nigeria'
+          ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>cowpea: ${p.cowpea}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
           : country === 'Ethiopia'
-            ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>wheat: ${props.wheat}</dd> <dd> bean: ${props.bean}</dd> <dd> tef: ${props.tef}</dd> </dl>`
+            ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>wheat: ${p.wheat}</dd> <dd> bean: ${p.bean}</dd> <dd> tef: ${p.tef}</dd> </dl>`
             : country === 'Tanzania'
-              ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>bean: ${props.bean}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+              ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>bean: ${p.bean}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
               : '')
     );
   }
@@ -127,8 +127,8 @@ export default function Map({ enhance, date, filter, props }) {
               >
                 <Popup>
                   <dl>
-                    {Object.keys(location[1]).map((key, index) => {
-                      return <dd key={index}>{`${key}: ${location[1][key]}`}</dd>;
+                    {Object.keys(location[1]).map((objKey, index) => {
+                      return <dd key={index}>{`${objKey}: ${location[1][objKey]}`}</dd>;
                     })}
                   </dl>
                 </Popup>

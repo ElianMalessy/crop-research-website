@@ -111,9 +111,23 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                  Boundaries
-                </MenuButton>
+                {country ? (
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
+                    Boundaries
+                  </MenuButton>
+                ) : (
+                  <MenuButton
+                    as={Button}
+                    rightIcon={<ChevronDownIcon />}
+                    w='100%'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    Boundaries
+                  </MenuButton>
+                )}
                 <MenuList minW='12rem'>
                   <MenuItem onClick={() => setEnhance('0')}>Level 0</MenuItem>
                   <MenuItem onClick={() => setEnhance('1')}>Level 1</MenuItem>
@@ -123,22 +137,55 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                  Crops
-                </MenuButton>
+                {country ? (
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
+                    Crops
+                  </MenuButton>
+                ) : (
+                  <MenuButton
+                    as={Button}
+                    rightIcon={<ChevronDownIcon />}
+                    w='100%'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    Crops
+                  </MenuButton>
+                )}
                 <MenuList minW='12rem'>
-                  <MenuItem onClick={() => setCrop('Maize')}>Maize</MenuItem>
-                  <MenuItem onClick={() => setCrop('Cowpea')}>Cowpea</MenuItem>
-                  <MenuItem onClick={() => setCrop('Cassava')}>Cassava</MenuItem>
-                  <MenuItem onClick={() => setCrop('Rice')}>Rice</MenuItem>
+                  {country &&
+                    Object.keys(props[country + 'Points'].features[0].properties).map((objKey, index) => {
+                      if (objKey !== 'ID' && objKey !== 'date')
+                        return (
+                          <MenuItem key={index} onClick={() => setCrop(objKey)}>
+                            {objKey[0].toUpperCase() + objKey.slice(1, objKey.length)}
+                          </MenuItem>
+                        );
+                    })}
                 </MenuList>
               </Menu>
             </GridItem>
             <GridItem>
               <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                  Filter
-                </MenuButton>
+                {country ? (
+                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
+                    Filter
+                  </MenuButton>
+                ) : (
+                  <MenuButton
+                    as={Button}
+                    rightIcon={<ChevronDownIcon />}
+                    w='100%'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    Filter
+                  </MenuButton>
+                )}
                 <MenuList minW='12rem'>
                   <MenuItem onClick={() => setFilter('all')}>
                     All

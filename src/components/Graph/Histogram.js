@@ -27,7 +27,6 @@ export default function Histogram({ data }) {
       for (let i = 0; i < crops.current.length; i++) {
         dataObj.current.push({ crop: crops.current[i], value: cropValues.current[i] });
       }
-      console.log(dataObj.current, crops.current, cropValues.current);
     },
     [data]
   );
