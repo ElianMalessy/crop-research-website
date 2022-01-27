@@ -10,6 +10,8 @@ export default function Histogram({ data }) {
     () => {
       crops.current = [];
       cropValues.current = [0, 0, 0, 0];
+      dataObj.current = [];
+
       for (const [key, value] of Object.entries(data.features[0].properties)) {
         if (key !== 'ID' && key !== 'date') crops.current.push(key);
       }
@@ -25,10 +27,10 @@ export default function Histogram({ data }) {
       for (let i = 0; i < crops.current.length; i++) {
         dataObj.current.push({ crop: crops.current[i], value: cropValues.current[i] });
       }
+      console.log(dataObj.current, crops.current, cropValues.current);
     },
     [data]
   );
-  const max = Math.ceil(d3.max(cropValues.current) / 10) * 10;
   const ref = useD3(
     (svg) => {
       const height = 600;
@@ -37,7 +39,10 @@ export default function Histogram({ data }) {
 
       const x = d3.scaleBand().domain(crops.current).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
-      const y = d3.scaleLinear().domain([0, max]).rangeRound([height - margin.bottom, margin.top]);
+      const y = d3
+        .scaleLinear()
+        .domain([0, Math.ceil(d3.max(cropValues.current) / 10) * 10])
+        .rangeRound([height - margin.bottom, margin.top]);
 
       const xAxis = (g) => g.attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x));
 
