@@ -73,11 +73,11 @@ export default function Map({ enhance, date, filter, props }) {
         ? props.NAME_2
         : props.NAME_1 ? props.NAME_1 : props.NAME_0}</span>` +
         (props.NAME_1 && country === 'Nigeria'
-          ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+          ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>cowpea: ${props.cowpea}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
           : country === 'Ethiopia'
-            ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>wheat: ${props.wheat}</dd> <dd> bean: ${props.bean}</dd> <dd> tef: ${props.tef}</dd> </dl>`
+            ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>wheat: ${props.wheat}</dd> <dd> bean: ${props.bean}</dd> <dd> tef: ${props.tef}</dd> </dl>`
             : country === 'Tanzania'
-              ? `<dd>crops (1 ha) </dd> <dd> maize: ${props.maize} </dd>  <dd>bean: ${props.bean}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
+              ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${props.maize} </dd>  <dd>bean: ${props.bean}</dd> <dd> cassava: ${props.cassava}</dd> <dd> rice: ${props.rice}</dd> </dl>`
               : '')
     );
   }
