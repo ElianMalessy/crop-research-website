@@ -8,7 +8,7 @@ import { CountryContext, DataContext } from '../../pages';
 
 export default function Map({ enhance, date, filter, props }) {
   const [locations, setLocations] = useState([]);
-  const [bounds, setBounds] = useState([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
+  const [bounds, setBounds] = useState([[ -37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
   const country = useContext(CountryContext);
   const data = useContext(DataContext);
 
@@ -68,10 +68,9 @@ export default function Map({ enhance, date, filter, props }) {
 
   function onEachRegion(currentCountry, layer) {
     const p = currentCountry.properties;
+    if (!p.NAME_1) return;
     layer.bindPopup(
-      `<dl> <span style="font-weight: 600">${p.NAME_2
-        ? p.NAME_2
-        : p.NAME_1 ? p.NAME_1 : p.NAME_0}</span>` +
+      `<dl> <span style="font-weight: 600">${p.NAME_2 ? p.NAME_2 : p.NAME_1}</span>` +
         (p.NAME_1 && country === 'Nigeria'
           ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>cowpea: ${p.cowpea}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
           : country === 'Ethiopia'
