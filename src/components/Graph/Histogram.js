@@ -90,7 +90,7 @@ export default function Histogram({ data }) {
     <svg
       ref={ref}
       style={{
-        height: 600,
+        height: '39rem',
         width: '100%',
         marginRight: '0px',
         marginLeft: '0px',

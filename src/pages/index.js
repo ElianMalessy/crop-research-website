@@ -17,7 +17,8 @@ import {
   RangeSliderFilledTrack,
   RangeSliderTrack,
   RangeSliderThumb,
-  Tooltip
+  Tooltip,
+  Center
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import axios from 'axios';
@@ -68,7 +69,7 @@ export default function Home(props) {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Grid templateColumns='repeat(36, 1fr)' gap={2} w='100%'>
-        <GridItem w='100%' colSpan={20}>
+        <GridItem w='100%'>
           <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
             <GridItem colSpan={1} mr='0.25rem'>
               <Button w='90%' onClick={toggleColorMode}>
@@ -200,6 +201,7 @@ export default function Home(props) {
             </GridItem>
             <GridItem colSpan={3} />
           </Grid>
+
           <DataContext.Provider value={data}>
             <CountryContext.Provider value={country}>
               <CropContext.Provider value={crop}>
@@ -212,61 +214,63 @@ export default function Home(props) {
         </GridItem>
         <GridItem colSpan={2} />
 
-        <GridItem colSpan={12}>
-          <RangeSlider
-            minW='12rem'
-            w='12rem'
-            mt='2rem'
-            defaultValue={[0, dateDifference]}
-            min={0}
-            max={dateDifference}
-            onChange={([val1, val2]) => {
-              setStartDate(
-                new Date(new Date(startingDate).setDate(new Date(startingDate).getDate() + val1)).toGMTString()
-              );
-              setEndDate(
-                new Date(
-                  new Date(endingDate).setDate(new Date(endingDate).getDate() + (val2 - dateDifference))
-                ).toGMTString()
-              );
-              startingDate = new Date('2022-05-01').toGMTString();
-              endingDate = new Date('2022-08-09').toGMTString();
-            }}
-          >
-            <RangeSliderTrack bg='blue.100'>
-              <RangeSliderFilledTrack bg='blue.400' />
-            </RangeSliderTrack>
-            <Tooltip
-              value={0}
-              hasArrow
-              bg='blue.900'
-              color='white'
-              placement='top'
-              isOpen={tooltipIsOpen}
-              label={new Date(startDate).toISOString().substring(0, 10)}
+        <GridItem w='32rem'>
+          <Center w='100%'>
+            <RangeSlider
+              minW='12rem'
+              w='15rem'
+              mt='2rem'
+              defaultValue={[0, dateDifference]}
+              min={0}
+              max={dateDifference}
+              onChange={([val1, val2]) => {
+                setStartDate(
+                  new Date(new Date(startingDate).setDate(new Date(startingDate).getDate() + val1)).toGMTString()
+                );
+                setEndDate(
+                  new Date(
+                    new Date(endingDate).setDate(new Date(endingDate).getDate() + (val2 - dateDifference))
+                  ).toGMTString()
+                );
+                startingDate = new Date('2022-05-01').toGMTString();
+                endingDate = new Date('2022-08-09').toGMTString();
+              }}
             >
-              {colorMode === 'light' ? (
-                <RangeSliderThumb index={0} bg='gray.800' />
-              ) : (
-                <RangeSliderThumb index={0} bg='white' />
-              )}
-            </Tooltip>
-            <Tooltip
-              value={dateDifference}
-              hasArrow
-              bg='blue.900'
-              color='white'
-              placement='bottom'
-              isOpen={tooltipIsOpen}
-              label={new Date(endDate).toISOString().substring(0, 10)}
-            >
-              {colorMode === 'light' ? (
-                <RangeSliderThumb index={1} bg='gray.800' />
-              ) : (
-                <RangeSliderThumb index={1} bg='white' />
-              )}
-            </Tooltip>
-          </RangeSlider>
+              <RangeSliderTrack bg='blue.100'>
+                <RangeSliderFilledTrack bg='blue.400' />
+              </RangeSliderTrack>
+              <Tooltip
+                value={0}
+                hasArrow
+                bg='blue.900'
+                color='white'
+                placement='top'
+                isOpen={tooltipIsOpen}
+                label={new Date(startDate).toISOString().substring(0, 10)}
+              >
+                {colorMode === 'light' ? (
+                  <RangeSliderThumb index={0} bg='gray.800' />
+                ) : (
+                  <RangeSliderThumb index={0} bg='white' />
+                )}
+              </Tooltip>
+              <Tooltip
+                value={dateDifference}
+                hasArrow
+                bg='blue.900'
+                color='white'
+                placement='bottom'
+                isOpen={tooltipIsOpen}
+                label={new Date(endDate).toISOString().substring(0, 10)}
+              >
+                {colorMode === 'light' ? (
+                  <RangeSliderThumb index={1} bg='gray.800' />
+                ) : (
+                  <RangeSliderThumb index={1} bg='white' />
+                )}
+              </Tooltip>
+            </RangeSlider>
+          </Center>
 
           {country === 'Tanzania' ? (
             <Histogram data={props.TanzaniaPoints} />
