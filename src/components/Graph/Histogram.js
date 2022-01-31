@@ -1,11 +1,20 @@
 import * as d3 from 'd3';
 import useD3 from '../Hooks/useD3';
 import { useEffect, useRef } from 'react';
+import useWindowDimensions from '../Hooks/useWindowDimensions';
 
 export default function Histogram({ data }) {
   const crops = useRef([]);
   const cropValues = useRef([0, 0, 0, 0]);
   const dataObj = useRef([]);
+
+  let { height, width } = useWindowDimensions();
+  height /= 100 / 69;
+  width /= 3;
+
+  useEffect(() => {
+    console.log(height, width);
+  });
   useEffect(
     () => {
       crops.current = [];
@@ -32,18 +41,18 @@ export default function Histogram({ data }) {
   );
   const ref = useD3(
     (svg) => {
-      const height = 600;
-      const width = 600;
-      const margin = { top: 20, right: 90, bottom: 50, left: 55 };
+      svg.selectAll('text.y').remove();
+      svg.selectAll('text.x').remove();
 
+      const margin = { top: 0, right: 90, bottom: 50, left: 55 };
       const x = d3.scaleBand().domain(crops.current).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
       const y = d3
         .scaleLinear()
         .domain([0, Math.ceil(d3.max(cropValues.current) / 10) * 10])
-        .rangeRound([height - margin.bottom, margin.top]);
+        .rangeRound([height - margin.top, margin.top]);
 
-      const xAxis = (g) => g.attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x));
+      const xAxis = (g) => g.call(d3.axisBottom(x));
 
       const yAxis = (g) =>
         g
@@ -66,39 +75,39 @@ export default function Histogram({ data }) {
         .attr('width', x.bandwidth())
         .attr('y', (d) => y(d.value))
         .attr('height', (d) => y(0) - y(d.value));
+
       svg
         .append('text')
         .attr('class', 'x label')
         .attr('text-anchor', 'end')
         .attr('x', width / 2)
-        .attr('y', height - 15)
+        .attr('y', '73vh')
         .text('crops');
       svg
         .append('text')
         .attr('class', 'y label')
         .attr('text-anchor', 'end')
         .attr('x', -height / 3)
-        .attr('y', 10)
         .attr('dy', '0.75em')
         .attr('transform', 'rotate(-90)')
         .text('Plots Found');
     },
-    [data]
+    [data, height, width]
   );
 
   return (
     <svg
       ref={ref}
       style={{
-        height: '39rem',
+        height: '75vh',
         width: '100%',
         marginRight: '0px',
         marginLeft: '0px',
-        transform: 'translate(0, 5vh)'
+        transform: 'translate(2vw, 10vh)'
       }}
     >
       <g className='plot-area' />
-      <g className='x-axis' />
+      <g className='x-axis' style={{ transform: 'translate(0, 69vh)' }} />
       <g className='y-axis' />
     </svg>
   );

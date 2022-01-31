@@ -8,23 +8,20 @@ import { CountryContext, DataContext } from '../../pages';
 
 export default function Map({ enhance, date, filter, props }) {
   const [locations, setLocations] = useState([]);
-  const [bounds, setBounds] = useState([[ -37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
+  const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
   const country = useContext(CountryContext);
   const data = useContext(DataContext);
 
   const LeafIcon = L.Icon.extend({
     options: {}
   });
-  const blueIcon = new LeafIcon({
-      iconUrl: 'https://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|abcdef&chf=a,s,ee00FFFF',
-      iconSize: [20, 35],
-      iconAnchor: [10, 35]
-    }),
-    redIcon = new LeafIcon({
-      iconUrl: 'https://i.stack.imgur.com/ffAqZ.png',
-      iconSize: [20, 35],
-      iconAnchor: [10, 35]
-    });
+  const greenIcon = new LeafIcon({
+    iconUrl:
+      'https://i.dlpng.com/static/png/4797576-green-dot-corporation-business-clip-art-cercle-de-fermieres-d-green-dot-png-900_680_preview.png',
+    iconSize: [20, 35],
+    iconAnchor: [10, 35]
+  });
+
   const getCropsWithDate = useCallback(
     (props) => {
       const locations = [];
@@ -116,7 +113,7 @@ export default function Map({ enhance, date, filter, props }) {
                 key={index}
                 position={[location[0][1], location[0][0]]}
                 icon={
-                  blueIcon
+                  greenIcon
                   // location[3] ? (
                   //   filter !== 'nCollected' && blueIcon
                   // ) : (

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Map from '../components/Map/index';
 import Histogram from '../components/Graph/Histogram';
-import styles from '../../styles/Home.module.css';
+import classes from '../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useRef, createContext } from 'react';
 import {
   Flex,
@@ -272,13 +272,13 @@ export default function Home(props) {
             </RangeSlider>
           </Center>
 
-          {country === 'Tanzania' ? (
-            <Histogram data={props.TanzaniaPoints} />
-          ) : country === 'Nigeria' ? (
-            <Histogram data={props.NigeriaPoints} />
-          ) : country === 'Ethiopia' ? (
-            <Histogram data={props.EthiopiaPoints} />
-          ) : null}
+            {country === 'Tanzania' ? (
+              <Histogram data={props.TanzaniaPoints} />
+            ) : country === 'Nigeria' ? (
+              <Histogram data={props.NigeriaPoints} />
+            ) : country === 'Ethiopia' ? (
+              <Histogram data={props.EthiopiaPoints} />
+            ) : null}
         </GridItem>
       </Grid>
     </Flex>
