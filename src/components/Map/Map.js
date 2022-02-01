@@ -4,63 +4,63 @@ import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useContext, useCallback } from 'react';
 import ChangeMapView from './ChangeMapView';
-import { CountryContext, DataContext } from '../../pages';
+import { CountryContext } from '../../pages';
 
-export default function Map({ enhance, date, filter, props }) {
+export default function Map({ enhance, date, filter, points, data }) {
   const [locations, setLocations] = useState([]);
   const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
   const country = useContext(CountryContext);
-  const data = useContext(DataContext);
 
   const LeafIcon = L.Icon.extend({
     options: {}
   });
   const greenIcon = new LeafIcon({
+    iconUrl: 'https://miro.medium.com/max/512/1*nZ9VwHTLxAfNCuCjYAkajg.png',
+    iconSize: [10, 10]
+  });
+  const redIcon = new LeafIcon({
     iconUrl:
-      'https://i.dlpng.com/static/png/4797576-green-dot-corporation-business-clip-art-cercle-de-fermieres-d-green-dot-png-900_680_preview.png',
-    iconSize: [20, 35],
-    iconAnchor: [10, 35]
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ90uBoDo0vuxIpBtDTcx1_JV3_1cv56qmpE0lnxnUrU04u9Ojw-HliEnUBd68gk13ca1w&usqp=CAU',
+    iconSize: [10, 10]
   });
 
   const getCropsWithDate = useCallback(
-    (props) => {
+    (countryPoints) => {
       const locations = [];
-      const countryPoints =
-        country[0] === 'N'
-          ? props.NigeriaPoints
-          : country[0] === 'E' ? props.EthiopiaPoints : country[0] === 'T' ? props.TanzaniaPoints : null;
-      if (!countryPoints) return;
       countryPoints.features.forEach((dataPoint) => {
         const dataDate = new Date(dataPoint.properties.date);
         if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
-          locations.push([dataPoint.geometry.coordinates, dataPoint.properties]);
+          locations.push([dataPoint.geometry.coordinates, dataPoint.properties, true]);
+        }
+        else if (dataDate > new Date(new Date('2022-07-20').toGMTString())) {
+          locations.push([dataPoint.geometry.coordinates, dataPoint.properties, false]);
         }
       });
       return locations;
     },
-    [country, date]
+    [date]
   );
   useEffect(
     () => {
       if (!country) return;
       switch (country[0]) {
         case 'N':
-          setLocations(getCropsWithDate(props));
+          setLocations(getCropsWithDate(points.NigeriaPoints));
           setBounds([[2.67581510543829, 4.27263784408598], [14.6557188034058, 13.8920097351076]]);
           break;
         case 'E':
-          setLocations(getCropsWithDate(props));
+          setLocations(getCropsWithDate(points.EthiopiaPoints));
           setBounds([[3.41243791580195, 33.0021171569826], [14.8304491043093, 47.9582290649417]]);
           break;
         case 'T':
-          setLocations(getCropsWithDate(props));
+          setLocations(getCropsWithDate(points.TanzaniaPoints));
           setBounds([[-12.19, 29.24], [-0.09, 41.35]]);
           break;
         default:
           break;
       }
     },
-    [country, getCropsWithDate, props]
+    [country, getCropsWithDate, points]
   );
 
   function onEachRegion(currentCountry, layer) {
@@ -105,31 +105,26 @@ export default function Map({ enhance, date, filter, props }) {
         />
         {locations &&
           locations.map((location, index) => {
-            // const popup = location[3]
-            //   ? filter !== 'nCollected' ? blueIcon : null
-            //   : filter === 'all' || filter === 'nCollected' ? redIcon : null;
+            const popup = location[2]
+              ? filter !== 'nCollected' ? greenIcon : null
+              : filter === 'all' || filter === 'nCollected' ? redIcon : null;
+            console.log(popup);
+
+            if (!popup) return;
             return (
-              <Marker
-                key={index}
-                position={[location[0][1], location[0][0]]}
-                icon={
-                  greenIcon
-                  // location[3] ? (
-                  //   filter !== 'nCollected' && blueIcon
-                  // ) : (
-                  //   (filter === 'all' || filter === 'nCollected') && redIcon
-                  // )
-                }
-              >
+              <Marker key={index} position={[location[0][1], location[0][0]]} icon={popup}>
                 <Popup>
-                  <dl>
-                    {Object.keys(location[1]).map((objKey, index) => {
-                      return <dd key={index}>{`${objKey}: ${location[1][objKey]}`}</dd>;
-                    })}
-                  </dl>
+                  {popup.options.iconUrl === greenIcon.options.iconUrl ? (
+                    <dl>
+                      {Object.keys(location[1]).map((objKey, index) => {
+                        return <dd key={index}>{`${objKey}: ${location[1][objKey]}`}</dd>;
+                      })}
+                    </dl>
+                  ) : (
+                    'Planned'
+                  )}
                 </Popup>
               </Marker>
-              //) : null;
             );
           })}
         {gJSONData && <GJSON data={gJSONData} />}

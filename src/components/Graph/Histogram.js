@@ -12,9 +12,6 @@ export default function Histogram({ data }) {
   height /= 100 / 69;
   width /= 3;
 
-  useEffect(() => {
-    console.log(height, width);
-  });
   useEffect(
     () => {
       crops.current = [];
@@ -44,7 +41,7 @@ export default function Histogram({ data }) {
       svg.selectAll('text.y').remove();
       svg.selectAll('text.x').remove();
 
-      const margin = { top: 0, right: 90, bottom: 50, left: 55 };
+      const margin = { top: 5, right: 90, bottom: 0, left: 55 };
       const x = d3.scaleBand().domain(crops.current).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
       const y = d3
@@ -52,7 +49,7 @@ export default function Histogram({ data }) {
         .domain([0, Math.ceil(d3.max(cropValues.current) / 10) * 10])
         .rangeRound([height - margin.top, margin.top]);
 
-      const xAxis = (g) => g.call(d3.axisBottom(x));
+      const xAxis = (g) => g.attr('transform', `translate(0,${height - margin.top})`).call(d3.axisBottom(x));
 
       const yAxis = (g) =>
         g
@@ -103,11 +100,11 @@ export default function Histogram({ data }) {
         width: '100%',
         marginRight: '0px',
         marginLeft: '0px',
-        transform: 'translate(2vw, 10vh)'
+        transform: 'translate(2vw, 12vh)'
       }}
     >
       <g className='plot-area' />
-      <g className='x-axis' style={{ transform: 'translate(0, 69vh)' }} />
+      <g className='x-axis' />
       <g className='y-axis' />
     </svg>
   );

@@ -6,12 +6,12 @@ import { useState, Fragment, useEffect, useRef, createContext } from 'react';
 import {
   Flex,
   Menu,
-  MenuButton,
   MenuList,
   MenuItem,
   Button,
   Grid,
   GridItem,
+  MenuButton,
   useColorMode,
   RangeSlider,
   RangeSliderFilledTrack,
@@ -21,12 +21,12 @@ import {
   Center
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
+import MButton from '../components/MenuButton/MButton';
 import axios from 'axios';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
 export const CropContext = createContext();
-export const DataContext = createContext();
 
 export default function Home(props) {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -38,11 +38,11 @@ export default function Home(props) {
   const [data, setData] = useState();
 
   const [tooltipIsOpen, setTooltipIsOpen] = useState(false);
-  const startingDate = new Date('2022-05-01').toGMTString();
-  const endingDate = new Date('2022-08-09').toGMTString();
-  const [startDate, setStartDate] = useState(startingDate);
-  const [endDate, setEndDate] = useState(endingDate);
-  const dateDifference = Math.floor(new Date(new Date(endingDate) - new Date(startingDate)) / 86400000);
+  const startingDate = useRef(new Date('2022-05-01').toGMTString());
+  const endingDate = useRef(new Date('2022-07-20').toGMTString());
+  const [startDate, setStartDate] = useState(startingDate.current);
+  const [endDate, setEndDate] = useState(endingDate.current);
+  const dateDifference = Math.floor(new Date(new Date(endingDate.current) - new Date(startingDate.current)) / 86400000);
 
   useEffect(() => {
     async function getData() {
@@ -112,23 +112,8 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                {country ? (
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                    Boundaries
-                  </MenuButton>
-                ) : (
-                  <MenuButton
-                    as={Button}
-                    rightIcon={<ChevronDownIcon />}
-                    w='100%'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    Boundaries
-                  </MenuButton>
-                )}
+                <MButton country={country} text='Boundaries' />
+
                 <MenuList minW='12rem'>
                   <MenuItem onClick={() => setEnhance('0')}>Level 0</MenuItem>
                   <MenuItem onClick={() => setEnhance('1')}>Level 1</MenuItem>
@@ -138,23 +123,8 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                {country ? (
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                    Crops
-                  </MenuButton>
-                ) : (
-                  <MenuButton
-                    as={Button}
-                    rightIcon={<ChevronDownIcon />}
-                    w='100%'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    Crops
-                  </MenuButton>
-                )}
+                <MButton country={country} text='Crops' />
+
                 <MenuList minW='12rem'>
                   {country &&
                     Object.keys(props[country + 'Points'].features[0].properties).map((objKey, index) => {
@@ -170,23 +140,8 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                {country ? (
-                  <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                    Filter
-                  </MenuButton>
-                ) : (
-                  <MenuButton
-                    as={Button}
-                    rightIcon={<ChevronDownIcon />}
-                    w='100%'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                  >
-                    Filter
-                  </MenuButton>
-                )}
+                <MButton country={country} text='Filter' />
+
                 <MenuList minW='12rem'>
                   <MenuItem onClick={() => setFilter('all')}>
                     All
@@ -202,15 +157,13 @@ export default function Home(props) {
             <GridItem colSpan={3} />
           </Grid>
 
-          <DataContext.Provider value={data}>
-            <CountryContext.Provider value={country}>
-              <CropContext.Provider value={crop}>
-                <ClickContext.Provider value={{ clicked, setClicked }}>
-                  <Map enhance={enhance} date={[startDate, endDate]} filter={filter} props={props} />
-                </ClickContext.Provider>
-              </CropContext.Provider>
-            </CountryContext.Provider>
-          </DataContext.Provider>
+          <CountryContext.Provider value={country}>
+            <CropContext.Provider value={crop}>
+              <ClickContext.Provider value={{ clicked, setClicked }}>
+                <Map enhance={enhance} date={[startDate, endDate]} filter={filter} points={props} data={data} />
+              </ClickContext.Provider>
+            </CropContext.Provider>
+          </CountryContext.Provider>
         </GridItem>
         <GridItem colSpan={2} />
 
@@ -225,15 +178,19 @@ export default function Home(props) {
               max={dateDifference}
               onChange={([val1, val2]) => {
                 setStartDate(
-                  new Date(new Date(startingDate).setDate(new Date(startingDate).getDate() + val1)).toGMTString()
+                  new Date(
+                    new Date(startingDate.current).setDate(new Date(startingDate.current).getDate() + val1)
+                  ).toGMTString()
                 );
                 setEndDate(
                   new Date(
-                    new Date(endingDate).setDate(new Date(endingDate).getDate() + (val2 - dateDifference))
+                    new Date(endingDate.current).setDate(
+                      new Date(endingDate.current).getDate() + (val2 - dateDifference)
+                    )
                   ).toGMTString()
                 );
-                startingDate = new Date('2022-05-01').toGMTString();
-                endingDate = new Date('2022-08-09').toGMTString();
+                startingDate.current = new Date('2022-05-01').toGMTString();
+                endingDate.current = new Date('2022-07-20').toGMTString();
               }}
             >
               <RangeSliderTrack bg='blue.100'>
@@ -272,13 +229,13 @@ export default function Home(props) {
             </RangeSlider>
           </Center>
 
-            {country === 'Tanzania' ? (
-              <Histogram data={props.TanzaniaPoints} />
-            ) : country === 'Nigeria' ? (
-              <Histogram data={props.NigeriaPoints} />
-            ) : country === 'Ethiopia' ? (
-              <Histogram data={props.EthiopiaPoints} />
-            ) : null}
+          {country === 'Tanzania' ? (
+            <Histogram data={props.TanzaniaPoints} />
+          ) : country === 'Nigeria' ? (
+            <Histogram data={props.NigeriaPoints} />
+          ) : country === 'Ethiopia' ? (
+            <Histogram data={props.EthiopiaPoints} />
+          ) : null}
         </GridItem>
       </Grid>
     </Flex>
