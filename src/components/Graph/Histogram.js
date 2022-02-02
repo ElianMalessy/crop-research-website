@@ -3,8 +3,7 @@ import useD3 from '../Hooks/useD3';
 import { useEffect, useRef } from 'react';
 import useWindowDimensions from '../Hooks/useWindowDimensions';
 
-export default function Histogram({ data }) {
-  const crops = useRef([]);
+export default function Histogram({ crops, data }) {
   const cropValues = useRef([0, 0, 0, 0]);
   const dataObj = useRef([]);
 
@@ -14,35 +13,32 @@ export default function Histogram({ data }) {
 
   useEffect(
     () => {
-      crops.current = [];
       cropValues.current = [0, 0, 0, 0];
       dataObj.current = [];
 
-      for (const [key, value] of Object.entries(data.features[0].properties)) {
-        if (key !== 'ID' && key !== 'date') crops.current.push(key);
-      }
       const len = data.features.length;
       for (let i = 0; i < len; i++) {
         const values = data.features[i].properties;
-        for (let j = 0; j < crops.current.length; j++) {
-          cropValues.current[j] += values[crops.current[j]];
+        for (let j = 0; j < crops.length; j++) {
+          cropValues.current[j] += values[crops[j]];
         }
       }
 
       // creates object for d3 to read from
-      for (let i = 0; i < crops.current.length; i++) {
-        dataObj.current.push({ crop: crops.current[i], value: cropValues.current[i] });
+      for (let i = 0; i < crops.length; i++) {
+        dataObj.current.push({ crop: crops[i], value: cropValues.current[i] });
       }
     },
-    [data]
+    [crops, data]
   );
+
   const ref = useD3(
     (svg) => {
       svg.selectAll('text.y').remove();
       svg.selectAll('text.x').remove();
 
       const margin = { top: 5, right: 90, bottom: 0, left: 55 };
-      const x = d3.scaleBand().domain(crops.current).rangeRound([margin.left, width - margin.right]).padding(0.1);
+      const x = d3.scaleBand().domain(crops).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
       const y = d3
         .scaleLinear()
@@ -89,7 +85,7 @@ export default function Histogram({ data }) {
         .attr('transform', 'rotate(-90)')
         .text('Plots Found');
     },
-    [data, height, width]
+    [data, height, width, crops]
   );
 
   return (

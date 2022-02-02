@@ -108,7 +108,6 @@ export default function Map({ enhance, date, filter, points, data }) {
             const popup = location[2]
               ? filter !== 'nCollected' ? greenIcon : null
               : filter === 'all' || filter === 'nCollected' ? redIcon : null;
-            console.log(popup);
 
             if (!popup) return;
             return (

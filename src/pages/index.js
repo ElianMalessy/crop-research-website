@@ -18,7 +18,8 @@ import {
   RangeSliderTrack,
   RangeSliderThumb,
   Tooltip,
-  Center
+  Center,
+  Checkbox
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import MButton from '../components/MenuButton/MButton';
@@ -31,7 +32,8 @@ export const CropContext = createContext();
 export default function Home(props) {
   const { colorMode, toggleColorMode } = useColorMode();
   const [country, setCountry] = useState();
-  const [crop, setCrop] = useState();
+  const [countryCrops, setCountryCrops] = useState([]);
+  const [currCrops, setCurrCrops] = useState([]);
   const [clicked, setClicked] = useState();
   const [enhance, setEnhance] = useState('0');
   const [filter, setFilter] = useState('all');
@@ -46,14 +48,31 @@ export default function Home(props) {
 
   useEffect(() => {
     async function getData() {
+      // gets initial level 0 data for better user experience as otherwise data loads too slow
       const initialRes = await axios.get('/api/getInitialData');
       setData(initialRes.data);
 
       const res = await axios.get('/api');
+      // combines the data objects
       setData([Object.assign(initialRes.data, res.data)]);
     }
     getData();
   }, []);
+
+  useEffect(
+    () => {
+      const arr = [];
+      if (!props || !country) return;
+      Object.keys(props[country + 'Points'].features[0].properties).map((objKey) => {
+        if (objKey !== 'ID' && objKey !== 'date') {
+          arr.push(objKey);
+        }
+      });
+      setCurrCrops(arr);
+      setCountryCrops(arr);
+    },
+    [props, country]
+  );
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -113,7 +132,6 @@ export default function Home(props) {
             <GridItem>
               <Menu>
                 <MButton country={country} text='Boundaries' />
-
                 <MenuList minW='12rem'>
                   <MenuItem onClick={() => setEnhance('0')}>Level 0</MenuItem>
                   <MenuItem onClick={() => setEnhance('1')}>Level 1</MenuItem>
@@ -122,18 +140,32 @@ export default function Home(props) {
               </Menu>
             </GridItem>
             <GridItem>
-              <Menu>
+              <Menu closeOnSelect={false}>
                 <MButton country={country} text='Crops' />
 
                 <MenuList minW='12rem'>
                   {country &&
-                    Object.keys(props[country + 'Points'].features[0].properties).map((objKey, index) => {
-                      if (objKey !== 'ID' && objKey !== 'date')
-                        return (
-                          <MenuItem key={index} onClick={() => setCrop(objKey)}>
-                            {objKey[0].toUpperCase() + objKey.slice(1, objKey.length)}
-                          </MenuItem>
-                        );
+                    countryCrops.map((crop, index) => {
+                      return (
+                        <MenuItem key={index}>
+                          <Checkbox
+                            isChecked={Array.isArray(currCrops) && currCrops.indexOf(crop) !== -1}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                const tempCurrCrops = currCrops.slice();
+                                tempCurrCrops.push(crop);
+                                setCurrCrops(tempCurrCrops);
+                              }
+                              else if (currCrops.indexOf(crop) >= 0) {
+                                const tempCurrCrops = currCrops.filter((t) => t !== crop);
+                                setCurrCrops(tempCurrCrops);
+                              }
+                            }}
+                          >
+                            {crop[0].toUpperCase() + crop.slice(1, crop.length)}
+                          </Checkbox>
+                        </MenuItem>
+                      );
                     })}
                 </MenuList>
               </Menu>
@@ -158,7 +190,7 @@ export default function Home(props) {
           </Grid>
 
           <CountryContext.Provider value={country}>
-            <CropContext.Provider value={crop}>
+            <CropContext.Provider value={currCrops}>
               <ClickContext.Provider value={{ clicked, setClicked }}>
                 <Map enhance={enhance} date={[startDate, endDate]} filter={filter} points={props} data={data} />
               </ClickContext.Provider>
@@ -230,11 +262,11 @@ export default function Home(props) {
           </Center>
 
           {country === 'Tanzania' ? (
-            <Histogram data={props.TanzaniaPoints} />
+            <Histogram crops={countryCrops} data={props.TanzaniaPoints} />
           ) : country === 'Nigeria' ? (
-            <Histogram data={props.NigeriaPoints} />
+            <Histogram crops={countryCrops} data={props.NigeriaPoints} />
           ) : country === 'Ethiopia' ? (
-            <Histogram data={props.EthiopiaPoints} />
+            <Histogram crops={countryCrops} data={props.EthiopiaPoints} />
           ) : null}
         </GridItem>
       </Grid>
