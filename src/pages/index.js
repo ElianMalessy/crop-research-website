@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Map from '../components/Map/index';
 import Histogram from '../components/Graph/Histogram';
+import Dashboard from '../components/Dashboard/Dashboard';
 import classes from '../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useRef, createContext } from 'react';
 import {
@@ -19,7 +20,9 @@ import {
   RangeSliderThumb,
   Tooltip,
   Center,
-  Checkbox
+  Checkbox,
+  useColorModeValue,
+  Box
 } from '@chakra-ui/react';
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import MButton from '../components/MenuButton/MButton';
@@ -31,6 +34,8 @@ export const CropContext = createContext();
 
 export default function Home(props) {
   const { colorMode, toggleColorMode } = useColorMode();
+  const thumbColor = useColorModeValue('gray.800', 'white');
+
   const [country, setCountry] = useState();
   const [countryCrops, setCountryCrops] = useState([]);
   const [currCrops, setCurrCrops] = useState([]);
@@ -53,6 +58,7 @@ export default function Home(props) {
       setData(initialRes.data);
 
       const res = await axios.get('/api');
+      console.log(res);
       // combines the data objects
       setData([Object.assign(initialRes.data, res.data)]);
     }
@@ -87,7 +93,7 @@ export default function Home(props) {
         <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <Grid templateColumns='repeat(36, 1fr)' gap={2} w='100%'>
+      <Grid templateColumns='repeat(30, 1fr)' gap={2} w='100%'>
         <GridItem w='100%'>
           <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
             <GridItem colSpan={1} mr='0.25rem'>
@@ -197,9 +203,8 @@ export default function Home(props) {
             </CropContext.Provider>
           </CountryContext.Provider>
         </GridItem>
-        <GridItem colSpan={2} />
 
-        <GridItem w='32rem'>
+        <GridItem w='40vw'>
           <Center w='100%'>
             <RangeSlider
               minW='12rem'
@@ -237,11 +242,7 @@ export default function Home(props) {
                 isOpen={tooltipIsOpen}
                 label={new Date(startDate).toISOString().substring(0, 10)}
               >
-                {colorMode === 'light' ? (
-                  <RangeSliderThumb index={0} bg='gray.800' />
-                ) : (
-                  <RangeSliderThumb index={0} bg='white' />
-                )}
+                <RangeSliderThumb index={0} bg={thumbColor} />
               </Tooltip>
               <Tooltip
                 value={dateDifference}
@@ -252,29 +253,30 @@ export default function Home(props) {
                 isOpen={tooltipIsOpen}
                 label={new Date(endDate).toISOString().substring(0, 10)}
               >
-                {colorMode === 'light' ? (
-                  <RangeSliderThumb index={1} bg='gray.800' />
-                ) : (
-                  <RangeSliderThumb index={1} bg='white' />
-                )}
+                <RangeSliderThumb index={1} bg={thumbColor} />
               </Tooltip>
             </RangeSlider>
           </Center>
-
-          {country === 'Tanzania' ? (
-            <Histogram crops={countryCrops} data={props.TanzaniaPoints} />
-          ) : country === 'Nigeria' ? (
-            <Histogram crops={countryCrops} data={props.NigeriaPoints} />
-          ) : country === 'Ethiopia' ? (
-            <Histogram crops={countryCrops} data={props.EthiopiaPoints} />
-          ) : null}
+          <Box>
+            {country && (
+              <Dashboard country={country}>
+                {country === 'Tanzania' ? (
+                  <Histogram crops={countryCrops} data={props.TanzaniaPoints} color={colorMode} />
+                ) : country === 'Nigeria' ? (
+                  <Histogram crops={countryCrops} data={props.NigeriaPoints} color={colorMode} />
+                ) : country === 'Ethiopia' ? (
+                  <Histogram crops={countryCrops} data={props.EthiopiaPoints} color={colorMode} />
+                ) : null}
+              </Dashboard>
+            )}
+          </Box>
         </GridItem>
       </Grid>
     </Flex>
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   let TanzaniaPoints;
   let NigeriaPoints;
   let EthiopiaPoints;

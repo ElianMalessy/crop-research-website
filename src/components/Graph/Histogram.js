@@ -3,13 +3,13 @@ import useD3 from '../Hooks/useD3';
 import { useEffect, useRef } from 'react';
 import useWindowDimensions from '../Hooks/useWindowDimensions';
 
-export default function Histogram({ crops, data }) {
+export default function Histogram({ crops, data, color }) {
   const cropValues = useRef([0, 0, 0, 0]);
   const dataObj = useRef([]);
 
   let { height, width } = useWindowDimensions();
-  height /= 100 / 69;
-  width /= 3;
+  height /= 1.7;
+  width /= 2.5;
 
   useEffect(
     () => {
@@ -74,29 +74,31 @@ export default function Histogram({ crops, data }) {
         .attr('class', 'x label')
         .attr('text-anchor', 'end')
         .attr('x', width / 2)
-        .attr('y', '73vh')
+        .attr('y', height + 25)
+        .attr('fill', color === 'light' ? 'black' : 'grey')
         .text('crops');
       svg
         .append('text')
         .attr('class', 'y label')
         .attr('text-anchor', 'end')
         .attr('x', -height / 3)
-        .attr('dy', '0.75em')
+        .attr('dy', '1.25em')
+        .attr('fill', color === 'light' ? 'black' : 'grey')
         .attr('transform', 'rotate(-90)')
         .text('Plots Found');
     },
-    [data, height, width, crops]
+    [data, height, width, crops, color]
   );
 
   return (
     <svg
       ref={ref}
       style={{
-        height: '75vh',
+        height: '65vh',
         width: '100%',
-        marginRight: '0px',
-        marginLeft: '0px',
-        transform: 'translate(2vw, 12vh)'
+        marginRight: '0',
+        marginLeft: '0',
+        marginTop: '0.75rem'
       }}
     >
       <g className='plot-area' />
