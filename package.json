@@ -2,7 +2,7 @@
   "name": "maps",
   "private": true,
   "scripts": {
-    "dev": "set NODE_OPTIONS=--max_old_space_size=8192 && next dev",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
