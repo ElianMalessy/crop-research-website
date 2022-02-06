@@ -32,7 +32,6 @@ export default function Map({ enhance, date, filter, points, data }) {
         const t = false;
         for (const [key, value] of Object.entries(dataPoint.properties)) {
           if (key !== 'ID' && key !== 'date' && crops.indexOf(key) === -1 && value === 0) {
-            console.log(key, value, crops);
             t = true;
           }
         }
