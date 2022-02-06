@@ -4,12 +4,13 @@ import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useContext, useCallback } from 'react';
 import ChangeMapView from './ChangeMapView';
-import { CountryContext } from '../../pages';
+import { CountryContext, CropContext } from '../../pages';
 
 export default function Map({ enhance, date, filter, points, data }) {
   const [locations, setLocations] = useState([]);
   const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
   const country = useContext(CountryContext);
+  const crops = useContext(CropContext);
 
   const LeafIcon = L.Icon.extend({
     options: {}
@@ -28,17 +29,26 @@ export default function Map({ enhance, date, filter, points, data }) {
     (countryPoints) => {
       const locations = [];
       countryPoints.features.forEach((dataPoint) => {
-        const dataDate = new Date(dataPoint.properties.date);
-        if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
-          locations.push([dataPoint.geometry.coordinates, dataPoint.properties, true]);
+        const t = false;
+        for (const [key, value] of Object.entries(dataPoint.properties)) {
+          if (key !== 'ID' && key !== 'date' && crops.indexOf(key) === -1 && value === 0) {
+            console.log(key, value, crops);
+            t = true;
+          }
         }
-        else if (dataDate > new Date(new Date('2022-07-20').toGMTString())) {
-          locations.push([dataPoint.geometry.coordinates, dataPoint.properties, false]);
+        if (!t) {
+          const dataDate = new Date(dataPoint.properties.date);
+          if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
+            locations.push([dataPoint.geometry.coordinates, dataPoint.properties, true]);
+          }
+          else if (dataDate > new Date(date[1])) {
+            locations.push([dataPoint.geometry.coordinates, dataPoint.properties, false]);
+          }
         }
       });
       return locations;
     },
-    [date]
+    [date, crops]
   );
   useEffect(
     () => {
@@ -60,7 +70,7 @@ export default function Map({ enhance, date, filter, points, data }) {
           break;
       }
     },
-    [country, getCropsWithDate, points]
+    [country, getCropsWithDate, points, crops]
   );
 
   function onEachRegion(currentCountry, layer) {
