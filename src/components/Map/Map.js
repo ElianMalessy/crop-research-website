@@ -29,13 +29,13 @@ export default function Map({ enhance, date, filter, points, data }) {
     (countryPoints) => {
       const locations = [];
       countryPoints.features.forEach((dataPoint) => {
-        const t = false;
+        const matchingCrops = false;
         for (const [key, value] of Object.entries(dataPoint.properties)) {
           if (key !== 'ID' && key !== 'date' && crops.indexOf(key) === -1 && value === 0) {
-            t = true;
+            matchingCrops = true;
           }
         }
-        if (!t) {
+        if (!matchingCrops) {
           const dataDate = new Date(dataPoint.properties.date);
           if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
             locations.push([dataPoint.geometry.coordinates, dataPoint.properties, true]);
