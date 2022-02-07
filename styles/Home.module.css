@@ -15,7 +15,8 @@
 
 .homeMap {
   margin-top: 1rem;
-  width: 54vw;
-  height: 88vh;
+  width: 48rem;
+  height: 90%;
   z-index: 0;
 }
+

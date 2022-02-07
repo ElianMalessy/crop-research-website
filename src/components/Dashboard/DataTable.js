@@ -1,29 +1,32 @@
-import React from 'react';
+import { useContext } from 'react';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@chakra-ui/react';
+import { CropContext } from '../../pages';
 
 export default function DataTable() {
+  const crops = useContext(CropContext);
+  console.log(crops)
   return (
     <Table size='sm'>
       <Thead>
         <Tr>
-          <Th colSpan={2} textAlign='center'>
-            Found
+          <Th>Crops</Th>
+          <Th >
+            Visited
           </Th>
-          <Th colSpan={2} textAlign='center'>
-            Not Found
+          <Th >
+            Not Visited
           </Th>
-        </Tr>
-        <Tr>
-          <Th>Expected</Th>
-          <Th>Not Expected</Th>
-          <Th>Expected</Th>
-          <Th>Not Expected</Th>
         </Tr>
       </Thead>
       <Tbody>
-        <Tr />
-        <Tr />
-        <Tr />
+        {crops && 
+        <>
+        <Tr><Td>{crops[0]}</Td></Tr>
+        <Tr><Td>{crops[1]}</Td></Tr>
+        <Tr><Td>{crops[2]}</Td></Tr>
+        <Tr><Td>{crops[3]}</Td></Tr>
+        </>
+      }
       </Tbody>
     </Table>
   );

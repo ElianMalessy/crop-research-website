@@ -8,8 +8,8 @@ export default function Histogram({ crops, data, color }) {
   const dataObj = useRef([]);
 
   let { height, width } = useWindowDimensions();
-  height /= 1.7;
-  width /= 2.5;
+  height = 460
+  width = 590
 
   useEffect(
     () => {
@@ -75,15 +75,15 @@ export default function Histogram({ crops, data, color }) {
         .attr('text-anchor', 'end')
         .attr('x', width / 2)
         .attr('y', height + 25)
-        .attr('fill', color === 'light' ? 'black' : 'grey')
+        .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .text('crops');
       svg
         .append('text')
         .attr('class', 'y label')
         .attr('text-anchor', 'end')
         .attr('x', -height / 3)
-        .attr('dy', '1.25em')
-        .attr('fill', color === 'light' ? 'black' : 'grey')
+        .attr('dy', '1em')
+        .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .attr('transform', 'rotate(-90)')
         .text('Plots Found');
     },
@@ -94,7 +94,7 @@ export default function Histogram({ crops, data, color }) {
     <svg
       ref={ref}
       style={{
-        height: '65vh',
+        height: '100%',
         width: '100%',
         marginRight: '0',
         marginLeft: '0',

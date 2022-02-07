@@ -1,22 +1,24 @@
 import React from 'react';
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@chakra-ui/react';
 import DataTable from './DataTable';
+import useWindowDimensions from '../Hooks/useWindowDimensions';
 export default function Dashboard({ children, country }) {
+  
   return (
-    <Tabs isFitted variant='enclosed' mt='3rem' p='1rem'>
+    <Tabs isFitted variant='enclosed' mt='2rem' p='1rem'>
       <TabList>
-        <Tab bg='red.700' border='none'>
-          One
+        <Tab bg='gray.900' border='none'>
+          Table
         </Tab>
-        <Tab bg='purple.900' border='none'>
-          Two
+        <Tab bg='blue.900' border='none'>
+          Graph
         </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel bg='red.700' h='70vh'>
+        <TabPanel bg='gray.900' h='34rem'>
           <DataTable />
         </TabPanel>
-        <TabPanel bg='purple.900' h='70vh'>
+        <TabPanel bg='blue.900' h='34rem'>
           {children}
         </TabPanel>
       </TabPanels>

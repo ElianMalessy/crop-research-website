@@ -6,12 +6,12 @@ import { useState, Fragment, useEffect, useContext, useCallback } from 'react';
 import ChangeMapView from './ChangeMapView';
 import { CountryContext, CropContext } from '../../pages';
 
-export default function Map({ enhance, date, filter, points, data }) {
+export default function Map({ enhance, date, filter, points, data, types }) {
   const [locations, setLocations] = useState([]);
   const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
   const country = useContext(CountryContext);
   const crops = useContext(CropContext);
-
+  useEffect(() => {}, [data]);
   const LeafIcon = L.Icon.extend({
     options: {}
   });
@@ -20,8 +20,7 @@ export default function Map({ enhance, date, filter, points, data }) {
     iconSize: [10, 10]
   });
   const redIcon = new LeafIcon({
-    iconUrl:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ90uBoDo0vuxIpBtDTcx1_JV3_1cv56qmpE0lnxnUrU04u9Ojw-HliEnUBd68gk13ca1w&usqp=CAU',
+    iconUrl: 'https://miro.medium.com/max/690/1*RPgy25l49WPXioyAJ1oRTA.png',
     iconSize: [10, 10]
   });
 
@@ -29,13 +28,22 @@ export default function Map({ enhance, date, filter, points, data }) {
     (countryPoints) => {
       const locations = [];
       countryPoints.features.forEach((dataPoint) => {
-        const matchingCrops = false;
+        const matchingCrops = true;
         for (const [key, value] of Object.entries(dataPoint.properties)) {
-          if (key !== 'ID' && key !== 'date' && crops.indexOf(key) === -1 && value === 0) {
-            matchingCrops = true;
+          if (
+            key !== 'ID' &&
+            key !== 'date' &&
+            key !== 'NAME_1' &&
+            key !== 'NAME_2' &&
+            key !== 'NAME_3' &&
+            key !== 'name' &&
+            crops.indexOf(key) === -1 &&
+            value === 0
+          ) {
+            matchingCrops = false;
           }
         }
-        if (!matchingCrops) {
+        if (matchingCrops) {
           const dataDate = new Date(dataPoint.properties.date);
           if (dataDate >= new Date(date[0]) && dataDate <= new Date(date[1])) {
             locations.push([dataPoint.geometry.coordinates, dataPoint.properties, true]);
@@ -76,30 +84,28 @@ export default function Map({ enhance, date, filter, points, data }) {
     const p = currentCountry.properties;
     if (!p.NAME_1) return;
     layer.bindPopup(
-      `<dl> <span style="font-weight: 600">${p.NAME_2 ? p.NAME_2 : p.NAME_1}</span>` +
+      `<dl><dd><span style="font-weight: 600">${types.lvl1 + ':' + p.NAME_1}</span></dd> ${p.NAME_2
+        ? `<dd><span style="font-weight: 550">${types.lvl2 + ':' + p.NAME_2}</dd>`
+        : ''} ` +
         (p.NAME_1 && country === 'Nigeria'
-          ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>cowpea: ${p.cowpea}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
+          ? `<dd>crops (1ha) </dd> <dd> maize: ${p.maize} </dd>  <dd>cowpea: ${p.cowpea}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
           : country === 'Ethiopia'
-            ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>wheat: ${p.wheat}</dd> <dd> bean: ${p.bean}</dd> <dd> tef: ${p.tef}</dd> </dl>`
+            ? `<dd>crops (1ha) </dd> <dd> maize: ${p.maize} </dd>  <dd>wheat: ${p.wheat}</dd> <dd> bean: ${p.bean}</dd> <dd> tef: ${p.tef}</dd> </dl>`
             : country === 'Tanzania'
-              ? `<dd>crops (0: Not Found 1: Found) </dd> <dd> maize: ${p.maize} </dd>  <dd>bean: ${p.bean}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
+              ? `<dd>crops (1ha) </dd> <dd> maize: ${p.maize} </dd>  <dd>bean: ${p.bean}</dd> <dd> cassava: ${p.cassava}</dd> <dd> rice: ${p.rice}</dd> </dl>`
               : '')
     );
   }
   const GJSON = ({ data }) => {
-    return enhance === '0' ? (
-      <GeoJSON onEachFeature={onEachRegion} data={data} style={{ fillOpacity: 0 }} />
-    ) : (
-      <GeoJSON onEachFeature={onEachRegion} data={data} />
-    );
+    return <GeoJSON onEachFeature={onEachRegion} data={data} style={{ fillOpacity: 0 }} />;
   };
 
   const [gJSONData, setGJSONData] = useState();
   useEffect(
     () => {
-      if (country && enhance && data) {
-        if (data[0]) setGJSONData(data[0][country + enhance]);
-        else setGJSONData(data[country + enhance]);
+      if (country && data) {
+        if (data[0]) setGJSONData(data[0][country + (enhance ? enhance : '0')]);
+        else setGJSONData(data[country + (enhance ? enhance : '0')]);
       }
     },
     [country, enhance, data]
@@ -116,7 +122,7 @@ export default function Map({ enhance, date, filter, points, data }) {
           locations.map((location, index) => {
             const popup = location[2]
               ? filter !== 'nCollected' ? greenIcon : null
-              : filter === 'all' || filter === 'nCollected' ? redIcon : null;
+              : filter === 'all' || !filter || filter === 'nCollected' ? redIcon : null;
 
             if (!popup) return;
             return (
@@ -124,8 +130,23 @@ export default function Map({ enhance, date, filter, points, data }) {
                 <Popup>
                   {popup.options.iconUrl === greenIcon.options.iconUrl ? (
                     <dl>
+                      <dd>crops (1ha)</dd>
                       {Object.keys(location[1]).map((objKey, index) => {
-                        return <dd key={index}>{`${objKey}: ${location[1][objKey]}`}</dd>;
+                        let n = objKey;
+                        switch (objKey) {
+                          case 'NAME_1':
+                            n = types.lvl1;
+                            break;
+                          case 'NAME_2':
+                            n = types.lvl2;
+                            break;
+                          case 'name':
+                            n = 'Town';
+                            break;
+                          default:
+                            break;
+                        }
+                        return <dd key={index}>{`${n}: ${location[1][objKey]}`}</dd>;
                       })}
                     </dl>
                   ) : (

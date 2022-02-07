@@ -40,8 +40,8 @@ export default function Home(props) {
   const [countryCrops, setCountryCrops] = useState([]);
   const [currCrops, setCurrCrops] = useState([]);
   const [clicked, setClicked] = useState();
-  const [enhance, setEnhance] = useState('0');
-  const [filter, setFilter] = useState('all');
+  const [enhance, setEnhance] = useState();
+  const [filter, setFilter] = useState();
   const [data, setData] = useState();
 
   const [tooltipIsOpen, setTooltipIsOpen] = useState(false);
@@ -50,7 +50,9 @@ export default function Home(props) {
   const [startDate, setStartDate] = useState(startingDate.current);
   const [endDate, setEndDate] = useState(endingDate.current);
   const dateDifference = Math.floor(new Date(new Date(endingDate.current) - new Date(startingDate.current)) / 86400000);
+  const [types, setTypes] = useState({});
 
+ 
   useEffect(() => {
     async function getData() {
       // gets initial level 0 data for better user experience as otherwise data loads too slow
@@ -58,19 +60,38 @@ export default function Home(props) {
       setData(initialRes.data);
 
       const res = await axios.get('/api');
-      console.log(res);
       // combines the data objects
-      setData([Object.assign(initialRes.data, res.data)]);
+      const obj = Object.assign(initialRes.data, res.data);
+      setData([obj]);
     }
     getData();
   }, []);
 
   useEffect(
     () => {
+      if (country && data && data[0]) {
+        console.log(data[0][country + '1']);
+        setTypes({
+          lvl1: data[0][country + '1'].features[0].properties.ENGTYPE_1,
+          lvl2: data[0][country + '2'].features[0].properties.ENGTYPE_2
+        });
+      }
+    },
+    [data, country]
+  );
+  useEffect(
+    () => {
       const arr = [];
       if (!props || !country) return;
       Object.keys(props[country + 'Points'].features[0].properties).map((objKey) => {
-        if (objKey !== 'ID' && objKey !== 'date') {
+        if (
+          objKey !== 'ID' &&
+          objKey !== 'date' &&
+          objKey !== 'NAME_1' &&
+          objKey !== 'NAME_2' &&
+          objKey !== 'NAME_3' &&
+          objKey !== 'name'
+        ) {
           arr.push(objKey);
         }
       });
@@ -88,10 +109,11 @@ export default function Home(props) {
   }, []);
 
   return (
-    <Flex w='100%' h='100%' p='1rem'>
+    <Flex w='100vw' h='100vh' p='1rem'>
       <Head>
         <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
+        <meta name='viewport' content='width=device-width,initial-scale=1' />
       </Head>
       <Grid templateColumns='repeat(30, 1fr)' gap={2} w='100%'>
         <GridItem w='100%'>
@@ -105,9 +127,9 @@ export default function Home(props) {
             <GridItem>
               <Menu>
                 <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                  Country
+                  {country ? country : 'Select a Country'}
                 </MenuButton>
-                <MenuList minW='12rem'>
+                <MenuList maxW='12rem'>
                   <MenuItem
                     onClick={() => {
                       setCountry('Nigeria');
@@ -137,11 +159,24 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MButton country={country} text='Boundaries' />
-                <MenuList minW='12rem'>
-                  <MenuItem onClick={() => setEnhance('0')}>Level 0</MenuItem>
-                  <MenuItem onClick={() => setEnhance('1')}>Level 1</MenuItem>
-                  <MenuItem onClick={() => setEnhance('2')}>Level 2</MenuItem>
+                <MButton
+                  country={country}
+                  text={
+                    enhance ? enhance === '0' ? (
+                      'Country'
+                    ) : enhance === '1' ? (
+                      types.lvl1
+                    ) : enhance === '2' ? (
+                      types.lvl2
+                    ) : null : (
+                      'Boundaries'
+                    )
+                  }
+                />
+                <MenuList maxW='12rem'>
+                  <MenuItem onClick={() => setEnhance('0')}>Country</MenuItem>
+                  <MenuItem onClick={() => setEnhance('1')}>{types.lvl1}</MenuItem>
+                  <MenuItem onClick={() => setEnhance('2')}>{types.lvl2}</MenuItem>
                 </MenuList>
               </Menu>
             </GridItem>
@@ -149,7 +184,7 @@ export default function Home(props) {
               <Menu closeOnSelect={false}>
                 <MButton country={country} text='Crops' />
 
-                <MenuList minW='12rem'>
+                <MenuList maxW='12rem'>
                   {country &&
                     countryCrops.map((crop, index) => {
                       return (
@@ -178,9 +213,9 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MButton country={country} text='Filter' />
+                <MButton country={country} text={filter ? filter : 'Filter'} />
 
-                <MenuList minW='12rem'>
+                <MenuList maxW='12rem'>
                   <MenuItem onClick={() => setFilter('all')}>
                     All
                     <span style={{ fontStyle: 'italic', color: 'grey', marginLeft: 'auto', marginRight: '0' }}>
@@ -198,17 +233,24 @@ export default function Home(props) {
           <CountryContext.Provider value={country}>
             <CropContext.Provider value={currCrops}>
               <ClickContext.Provider value={{ clicked, setClicked }}>
-                <Map enhance={enhance} date={[startDate, endDate]} filter={filter} points={props} data={data} />
+                <Map
+                  enhance={enhance}
+                  date={[startDate, endDate]}
+                  filter={filter}
+                  points={props}
+                  data={data}
+                  types={types}
+                />
               </ClickContext.Provider>
             </CropContext.Provider>
           </CountryContext.Provider>
         </GridItem>
+        <GridItem colSpan={10} />
 
-        <GridItem w='40vw'>
+        <GridItem w='36rem'>
           <Center w='100%'>
             <RangeSlider
-              minW='12rem'
-              w='15rem'
+              maxW='15rem'
               mt='2rem'
               defaultValue={[0, dateDifference]}
               min={0}
@@ -259,18 +301,21 @@ export default function Home(props) {
           </Center>
           <Box>
             {country && (
-              <Dashboard country={country}>
-                {country === 'Tanzania' ? (
-                  <Histogram crops={countryCrops} data={props.TanzaniaPoints} color={colorMode} />
-                ) : country === 'Nigeria' ? (
-                  <Histogram crops={countryCrops} data={props.NigeriaPoints} color={colorMode} />
-                ) : country === 'Ethiopia' ? (
-                  <Histogram crops={countryCrops} data={props.EthiopiaPoints} color={colorMode} />
-                ) : null}
-              </Dashboard>
+              <CropContext.Provider value={currCrops}>
+                <Dashboard country={country}>
+                  {country === 'Tanzania' ? (
+                    <Histogram crops={countryCrops} data={props.TanzaniaPoints} color={colorMode} />
+                  ) : country === 'Nigeria' ? (
+                    <Histogram crops={countryCrops} data={props.NigeriaPoints} color={colorMode} />
+                  ) : country === 'Ethiopia' ? (
+                    <Histogram crops={countryCrops} data={props.EthiopiaPoints} color={colorMode} />
+                  ) : null}
+                </Dashboard>
+              </CropContext.Provider>
             )}
           </Box>
         </GridItem>
+        <GridItem colSpan={3} />
       </Grid>
     </Flex>
   );
