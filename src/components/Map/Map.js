@@ -84,7 +84,9 @@ export default function Map({ enhance, date, filter, points, data, types }) {
     const p = currentCountry.properties;
     if (!p.NAME_1) return;
     layer.bindPopup(
-      `<dl><dd><span style="font-weight: 600">${types.lvl1 + ':' + p.NAME_1}</span></dd> ${p.NAME_2
+      `<dl><dd><span style="font-weight: 600">${p.NAME_1 === 'AddisAbeba'
+        ? 'City' + ':' + p.NAME_1
+        : types.lvl1 + ':' + p.NAME_1}</span></dd> ${p.NAME_2
         ? `<dd><span style="font-weight: 550">${types.lvl2 + ':' + p.NAME_2}</dd>`
         : ''} ` +
         (p.NAME_1 && country === 'Nigeria'
@@ -146,7 +148,6 @@ export default function Map({ enhance, date, filter, points, data, types }) {
                         default:
                           break;
                       }
-                     
 
                       return (
                         <dd key={index}>{`${n}: ${popup.options.iconUrl !== greenIcon.options.iconUrl && n === 'date'
