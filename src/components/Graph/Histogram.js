@@ -12,8 +12,8 @@ export default function Histogram({ color }) {
   const date = useContext(DateContext);
 
   let { height, width } = useWindowDimensions();
-  height = 460;
-  width = 590;
+  height /= 1.8;
+  width /= 2.7;
 
   useEffect(
     () => {

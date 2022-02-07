@@ -251,7 +251,7 @@ export default function Home(props) {
         </GridItem>
         <GridItem colSpan={10} />
 
-        <GridItem w='36rem'>
+        <GridItem w='36vw' h='40vh'>
           <Center w='100%'>
             <RangeSlider
               maxW='15rem'
@@ -317,7 +317,6 @@ export default function Home(props) {
             )}
           </Box>
         </GridItem>
-        <GridItem colSpan={3} />
       </Grid>
     </Flex>
   );

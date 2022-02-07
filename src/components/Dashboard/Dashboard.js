@@ -13,10 +13,10 @@ export default function Dashboard({ children, country }) {
         </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel bg='gray.900' h='34rem'>
+        <TabPanel bg='gray.900' h='68vh'>
           <DataTable />
         </TabPanel>
-        <TabPanel bg='blue.900' h='34rem'>
+        <TabPanel bg='blue.900' h='68vh'>
           {children}
         </TabPanel>
       </TabPanels>

@@ -29,7 +29,7 @@ export default function DataTable() {
     [crops, data, date]
   );
   return (
-    <Table size='lg'>
+    <Table size='lg' w='32vw'>
       <Thead>
         <Tr>
           <Th>Crops</Th>
