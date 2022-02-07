@@ -128,30 +128,33 @@ export default function Map({ enhance, date, filter, points, data, types }) {
             return (
               <Marker key={index} position={[location[0][1], location[0][0]]} icon={popup}>
                 <Popup>
-                  {popup.options.iconUrl === greenIcon.options.iconUrl ? (
-                    <dl>
-                      <dd>crops (1ha)</dd>
-                      {Object.keys(location[1]).map((objKey, index) => {
-                        let n = objKey;
-                        switch (objKey) {
-                          case 'NAME_1':
-                            n = types.lvl1;
-                            break;
-                          case 'NAME_2':
-                            n = types.lvl2;
-                            break;
-                          case 'name':
-                            n = 'Town';
-                            break;
-                          default:
-                            break;
-                        }
-                        return <dd key={index}>{`${n}: ${location[1][objKey]}`}</dd>;
-                      })}
-                    </dl>
-                  ) : (
-                    'Planned'
-                  )}
+                  <dl>
+                    <dd>{popup.options.iconUrl === greenIcon.options.iconUrl ? 'Visited' : 'Not Visited'}</dd>
+                    <dd>crops (1ha)</dd>
+                    {Object.keys(location[1]).map((objKey, index) => {
+                      let n = objKey;
+                      switch (objKey) {
+                        case 'NAME_1':
+                          n = types.lvl1;
+                          break;
+                        case 'NAME_2':
+                          n = types.lvl2;
+                          break;
+                        case 'name':
+                          n = 'Town';
+                          break;
+                        default:
+                          break;
+                      }
+                     
+
+                      return (
+                        <dd key={index}>{`${n}: ${popup.options.iconUrl !== greenIcon.options.iconUrl && n === 'date'
+                          ? 'Future'
+                          : location[1][objKey]}`}</dd>
+                      );
+                    })}
+                  </dl>
                 </Popup>
               </Marker>
             );

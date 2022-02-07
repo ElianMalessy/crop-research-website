@@ -27,10 +27,13 @@ import {
 import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import MButton from '../components/MenuButton/MButton';
 import axios from 'axios';
+import { subdivisions } from '../components/Map/subdivisions';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
 export const CropContext = createContext();
+export const DataContext = createContext();
+export const DateContext = createContext();
 
 export default function Home(props) {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -52,7 +55,6 @@ export default function Home(props) {
   const dateDifference = Math.floor(new Date(new Date(endingDate.current) - new Date(startingDate.current)) / 86400000);
   const [types, setTypes] = useState({});
 
- 
   useEffect(() => {
     async function getData() {
       // gets initial level 0 data for better user experience as otherwise data loads too slow
@@ -69,15 +71,14 @@ export default function Home(props) {
 
   useEffect(
     () => {
-      if (country && data && data[0]) {
-        console.log(data[0][country + '1']);
+      if (country) {
         setTypes({
-          lvl1: data[0][country + '1'].features[0].properties.ENGTYPE_1,
-          lvl2: data[0][country + '2'].features[0].properties.ENGTYPE_2
+          lvl1: subdivisions[country][0],
+          lvl2: subdivisions[country][1]
         });
       }
     },
-    [data, country]
+    [country]
   );
   useEffect(
     () => {
@@ -213,7 +214,7 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MButton country={country} text={filter ? filter : 'Filter'} />
+                <MButton country={country} text={filter ? filter[0] === 'c' ? 'Visited' : 'Planned' : 'Filter'} />
 
                 <MenuList maxW='12rem'>
                   <MenuItem onClick={() => setFilter('all')}>
@@ -301,17 +302,15 @@ export default function Home(props) {
           </Center>
           <Box>
             {country && (
-              <CropContext.Provider value={currCrops}>
-                <Dashboard country={country}>
-                  {country === 'Tanzania' ? (
-                    <Histogram crops={countryCrops} data={props.TanzaniaPoints} color={colorMode} />
-                  ) : country === 'Nigeria' ? (
-                    <Histogram crops={countryCrops} data={props.NigeriaPoints} color={colorMode} />
-                  ) : country === 'Ethiopia' ? (
-                    <Histogram crops={countryCrops} data={props.EthiopiaPoints} color={colorMode} />
-                  ) : null}
-                </Dashboard>
-              </CropContext.Provider>
+              <DateContext.Provider value={[startDate, endDate]}>
+                <CropContext.Provider value={countryCrops}>
+                  <DataContext.Provider value={props[country + 'Points'].features}>
+                    <Dashboard country={country}>
+                      <Histogram color={colorMode} />
+                    </Dashboard>
+                  </DataContext.Provider>
+                </CropContext.Provider>
+              </DateContext.Provider>
             )}
           </Box>
         </GridItem>

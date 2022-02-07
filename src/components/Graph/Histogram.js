@@ -1,26 +1,31 @@
 import * as d3 from 'd3';
 import useD3 from '../Hooks/useD3';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useContext } from 'react';
 import useWindowDimensions from '../Hooks/useWindowDimensions';
+import { DataContext, CropContext, DateContext } from '../../pages';
 
-export default function Histogram({ crops, data, color }) {
+export default function Histogram({ color }) {
   const cropValues = useRef([0, 0, 0, 0]);
   const dataObj = useRef([]);
+  const data = useContext(DataContext);
+  const crops = useContext(CropContext);
+  const date = useContext(DateContext);
 
   let { height, width } = useWindowDimensions();
-  height = 460
-  width = 590
+  height = 460;
+  width = 590;
 
   useEffect(
     () => {
       cropValues.current = [0, 0, 0, 0];
       dataObj.current = [];
 
-      const len = data.features.length;
+      const len = data.length;
       for (let i = 0; i < len; i++) {
-        const values = data.features[i].properties;
+        const values = data[i].properties;
+        const d = new Date(values.date);
         for (let j = 0; j < crops.length; j++) {
-          cropValues.current[j] += values[crops[j]];
+          if (d >= new Date(date[0]) && d <= new Date(date[1])) cropValues.current[j] += values[crops[j]];
         }
       }
 
@@ -29,7 +34,7 @@ export default function Histogram({ crops, data, color }) {
         dataObj.current.push({ crop: crops[i], value: cropValues.current[i] });
       }
     },
-    [crops, data]
+    [crops, data, date]
   );
 
   const ref = useD3(
@@ -87,7 +92,7 @@ export default function Histogram({ crops, data, color }) {
         .attr('transform', 'rotate(-90)')
         .text('Plots Found');
     },
-    [data, height, width, crops, color]
+    [data, height, width, crops, color, date]
   );
 
   return (
