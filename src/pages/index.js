@@ -214,7 +214,10 @@ export default function Home(props) {
             </GridItem>
             <GridItem>
               <Menu>
-                <MButton country={country} text={filter ? filter[0] === 'c' ? 'Visited' : 'Planned' : 'Filter'} />
+                <MButton
+                  country={country}
+                  text={filter ? filter[0] === 'c' ? 'Collected' : filter[0] === 'n' ? 'Planned' : 'All' : 'Filter'}
+                />
 
                 <MenuList maxW='12rem'>
                   <MenuItem onClick={() => setFilter('all')}>
