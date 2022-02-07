@@ -38,7 +38,7 @@ export default function Map({ enhance, date, filter, points, data, types }) {
             key !== 'NAME_3' &&
             key !== 'name' &&
             crops.indexOf(key) === -1 &&
-            value === 0
+            value !== 0
           ) {
             matchingCrops = false;
           }
