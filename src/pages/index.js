@@ -28,6 +28,7 @@ import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
 import MButton from '../components/MenuButton/MButton';
 import axios from 'axios';
 import { subdivisions } from '../components/Map/subdivisions';
+import useSWR from 'swr';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
@@ -55,19 +56,9 @@ export default function Home(props) {
   const dateDifference = Math.floor(new Date(new Date(endingDate.current) - new Date(startingDate.current)) / 86400000);
   const [types, setTypes] = useState({});
 
-  useEffect(() => {
-    async function getData() {
-      // gets initial level 0 data for better user experience as otherwise data loads too slow
-      const initialRes = await axios.get('/api/getInitialData');
-      setData(initialRes.data);
-
-      const res = await axios.get('/api');
-      // combines the data objects
-      const obj = Object.assign(initialRes.data, res.data);
-      setData([obj]);
-    }
-    getData();
-  }, []);
+  const fetcher = (url) => axios.get(url).then((r) => r.data);
+  const { data: res } = useSWR('/api', fetcher);
+  if (res && !data) setData([res]);
 
   useEffect(
     () => {
@@ -110,13 +101,13 @@ export default function Home(props) {
   }, []);
 
   return (
-    <Flex w='100vw' h='100vh' p='1rem'>
+    <Flex w='100vw' h='100vh' p='1rem 2rem 1rem 2rem' overflowX='hidden'>
       <Head>
         <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
-        <meta name='viewport' content='width=device-width,initial-scale=1' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
       </Head>
-      <Grid templateColumns='repeat(30, 1fr)' gap={2} w='100%'>
+      <Grid w='100%' className={classes.grid}>
         <GridItem w='100%'>
           <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
             <GridItem colSpan={1} mr='0.25rem'>
@@ -249,9 +240,8 @@ export default function Home(props) {
             </CropContext.Provider>
           </CountryContext.Provider>
         </GridItem>
-        <GridItem colSpan={10} />
 
-        <GridItem w='36vw' h='40vh'>
+        <GridItem minW='36vw' h='40vh' ml='3rem'>
           <Center w='100%'>
             <RangeSlider
               maxW='15rem'

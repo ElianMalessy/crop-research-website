@@ -10,10 +10,8 @@ export default function Histogram({ color }) {
   const data = useContext(DataContext);
   const crops = useContext(CropContext);
   const date = useContext(DateContext);
-
-  let { height, width } = useWindowDimensions();
-  height /= 1.8;
-  width /= 2.7;
+  const height = 500;
+  const width = 900;
 
   useEffect(
     () => {
@@ -98,9 +96,10 @@ export default function Histogram({ color }) {
   return (
     <svg
       ref={ref}
+      viewBox='0 0 830 530'
       style={{
         height: '100%',
-        width: '100%',
+        maxWidth: '100%',
         marginRight: '0',
         marginLeft: '0',
         marginTop: '0.75rem'

@@ -15,8 +15,10 @@
 
 .homeMap {
   margin-top: 1rem;
-  width: 50vw;
+  min-width: 50vw;
   height: 84.5vh;
   z-index: 0;
 }
-
+.grid {
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
+}

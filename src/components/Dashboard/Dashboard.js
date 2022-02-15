@@ -1,6 +1,5 @@
 import { Tabs, Tab, TabList, TabPanels, TabPanel } from '@chakra-ui/react';
 import DataTable from './DataTable';
-import useWindowDimensions from '../Hooks/useWindowDimensions';
 export default function Dashboard({ children, country }) {
   return (
     <Tabs isFitted variant='enclosed' mt='2rem' p='1rem'>
@@ -13,7 +12,7 @@ export default function Dashboard({ children, country }) {
         </Tab>
       </TabList>
       <TabPanels>
-        <TabPanel bg='gray.900' h='68vh'>
+        <TabPanel bg='gray.900' h='68vh' p='1rem' overflow='hidden'>
           <DataTable />
         </TabPanel>
         <TabPanel bg='blue.900' h='68vh'>
