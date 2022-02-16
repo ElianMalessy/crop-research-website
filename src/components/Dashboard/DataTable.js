@@ -1,9 +1,9 @@
 import { Fragment, useContext, useEffect, useState } from 'react';
 import { Table, Thead, Tr, Th, Tbody, Td } from '@chakra-ui/react';
-import { CropContext, DataContext, DateContext } from '../../pages';
-
+import { CountryCropContext, DataContext, DateContext } from '../../pages';
+import classes from '../../../styles/Home.module.css';
 export default function DataTable() {
-  const crops = useContext(CropContext);
+  const crops = useContext(CountryCropContext);
   const data = useContext(DataContext);
   const date = useContext(DateContext);
   const [cropVals, setCropVals] = useState([[0, 0], [0, 0], [0, 0], [0, 0]]);
@@ -29,12 +29,12 @@ export default function DataTable() {
     [crops, data, date]
   );
   return (
-    <Table size='lg' w='100%' whiteSpace='nowrap'>
+    <Table size='lg' w='100%' whiteSpace='nowrap' className={classes.table}>
       <Thead>
         <Tr>
           <Th>Crops</Th>
-          <Th>Visited</Th>
-          <Th>Not Visited</Th>
+          <Th isNumeric>Visited</Th>
+          <Th isNumeric>Not Visited</Th>
         </Tr>
       </Thead>
       <Tbody>
@@ -43,9 +43,9 @@ export default function DataTable() {
             {crops.map((crop, index) => {
               return (
                 <Tr key={index}>
-                  <Td>{crop}</Td>
-                  <Td>{cropVals[index][0] + ' (ha)'} </Td>
-                  <Td>{cropVals[index][1] + ' (ha)'} </Td>
+                  <Td>{crop[0].toUpperCase() + crop.slice(1, crop.length)}</Td>
+                  <Td isNumeric>{cropVals[index][0] + ' (ha)'} </Td>
+                  <Td isNumeric>{cropVals[index][1] + ' (ha)'} </Td>
                 </Tr>
               );
             })}

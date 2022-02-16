@@ -2,16 +2,16 @@ import * as d3 from 'd3';
 import useD3 from '../Hooks/useD3';
 import { useEffect, useRef, useContext } from 'react';
 import useWindowDimensions from '../Hooks/useWindowDimensions';
-import { DataContext, CropContext, DateContext } from '../../pages';
+import { DataContext, CountryCropContext, DateContext } from '../../pages';
 
 export default function Histogram({ color }) {
   const cropValues = useRef([0, 0, 0, 0]);
   const dataObj = useRef([]);
   const data = useContext(DataContext);
-  const crops = useContext(CropContext);
+  const crops = useContext(CountryCropContext);
   const date = useContext(DateContext);
-  const height = 500;
-  const width = 900;
+  const { height, width } = useWindowDimensions();
+  width = 1200;
 
   useEffect(
     () => {
@@ -37,23 +37,30 @@ export default function Histogram({ color }) {
 
   const ref = useD3(
     (svg) => {
+      if (!height) return;
       svg.selectAll('text.y').remove();
       svg.selectAll('text.x').remove();
 
-      const margin = { top: 5, right: 90, bottom: 0, left: 55 };
+      const margin = { top: 0, right: 90, bottom: 0, left: 90 };
       const x = d3.scaleBand().domain(crops).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
       const y = d3
         .scaleLinear()
         .domain([0, Math.ceil(d3.max(cropValues.current) / 10) * 10])
-        .rangeRound([height - margin.top, margin.top]);
+        .rangeRound([height, margin.top]);
 
-      const xAxis = (g) => g.attr('transform', `translate(0,${height - margin.top})`).call(d3.axisBottom(x));
+      const xAxis = (g) =>
+        g
+          .attr('transform', `translate(0,${height})`)
+          .style('font-size', '1.5rem')
+          .style('color', 'white')
+          .call(d3.axisBottom(x));
 
       const yAxis = (g) =>
         g
           .attr('transform', `translate(${margin.left},0)`)
           .style('color', 'steelblue')
+          .style('font-size', '1.25rem')
           .call(d3.axisLeft(y).ticks(null, 's'))
           .call((g) => g.select('.domain').remove());
 
@@ -76,15 +83,17 @@ export default function Histogram({ color }) {
         .append('text')
         .attr('class', 'x label')
         .attr('text-anchor', 'end')
-        .attr('x', width / 2)
-        .attr('y', height + 25)
+        .attr('x', width / 1.9)
+        .attr('y', height * 1.1)
+        .attr('font-size', '2rem')
         .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .text('crops');
       svg
         .append('text')
         .attr('class', 'y label')
         .attr('text-anchor', 'end')
-        .attr('x', -height / 3)
+        .attr('x', -height / 2.75)
+        .attr('font-size', '2rem')
         .attr('dy', '1em')
         .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .attr('transform', 'rotate(-90)')
@@ -96,13 +105,12 @@ export default function Histogram({ color }) {
   return (
     <svg
       ref={ref}
-      viewBox='0 0 830 530'
+      viewBox='0 0 1150 815'
       style={{
         height: '100%',
         maxWidth: '100%',
         marginRight: '0',
-        marginLeft: '0',
-        marginTop: '0.75rem'
+        marginLeft: '0'
       }}
     >
       <g className='plot-area' />

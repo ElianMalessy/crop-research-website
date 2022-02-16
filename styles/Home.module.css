@@ -1,3 +1,4 @@
+@import-normalize;
 .title {
   font-size: 2.5rem;
   text-align: center;
@@ -16,9 +17,42 @@
 .homeMap {
   margin-top: 1rem;
   min-width: 50vw;
-  height: 84.5vh;
   z-index: 0;
+  height: 89vh;
 }
 .grid {
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
+}
+.rightPanel {
+  margin-left: 3rem;
+}
+@media screen and (max-width: 620px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  }
+  .table th,
+  .table td {
+    padding: 1rem 1rem 0 0 !important;
+  }
+  .rightPanel {
+    margin-left: 0;
+  }
+  .homeMap {
+    margin-top: 0;
+    height: 84.5vh;
+  }
+}
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #000000c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 98;
+  margin: 0;
 }

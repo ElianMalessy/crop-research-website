@@ -4,13 +4,14 @@ import 'leaflet/dist/leaflet.css';
 import styles from '../../../styles/Home.module.css';
 import { useState, Fragment, useEffect, useContext, useCallback } from 'react';
 import ChangeMapView from './ChangeMapView';
-import { CountryContext, CropContext } from '../../pages';
+import { CountryContext } from '../../pages';
 
-export default function Map({ enhance, date, filter, points, data, types }) {
+export default function Map({ date, filter, points, data, enhance, types, crops }) {
+  const { country } = useContext(CountryContext);
+
   const [locations, setLocations] = useState([]);
   const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
-  const country = useContext(CountryContext);
-  const crops = useContext(CropContext);
+
   useEffect(() => {}, [data]);
   const LeafIcon = L.Icon.extend({
     options: {}

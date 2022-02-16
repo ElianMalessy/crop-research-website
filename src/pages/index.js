@@ -3,38 +3,35 @@ import Map from '../components/Map/index';
 import Histogram from '../components/Graph/Histogram';
 import Dashboard from '../components/Dashboard/Dashboard';
 import classes from '../../styles/Home.module.css';
-import { useState, Fragment, useEffect, useRef, createContext } from 'react';
+import { useState, useEffect, useRef, createContext } from 'react';
 import {
   Flex,
-  Menu,
-  MenuList,
-  MenuItem,
-  Button,
   Grid,
   GridItem,
-  MenuButton,
-  useColorMode,
   RangeSlider,
   RangeSliderFilledTrack,
   RangeSliderTrack,
   RangeSliderThumb,
   Tooltip,
   Center,
-  Checkbox,
   useColorModeValue,
+  useColorMode,
   Box
 } from '@chakra-ui/react';
-import { ChevronDownIcon, SunIcon, MoonIcon } from '@chakra-ui/icons';
-import MButton from '../components/MenuButton/MButton';
 import axios from 'axios';
 import { subdivisions } from '../components/Map/subdivisions';
 import useSWR from 'swr';
+import Navbar from '../components/Navbar/Navbar';
 
 export const ClickContext = createContext();
 export const CountryContext = createContext();
-export const CropContext = createContext();
+export const CurrCropContext = createContext();
 export const DataContext = createContext();
 export const DateContext = createContext();
+export const TypesContext = createContext();
+export const EnhanceContext = createContext();
+export const FilterContext = createContext();
+export const CountryCropContext = createContext();
 
 export default function Home(props) {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -101,7 +98,7 @@ export default function Home(props) {
   }, []);
 
   return (
-    <Flex w='100vw' h='100vh' p='1rem 2rem 1rem 2rem' overflowX='hidden'>
+    <Flex w='100vw' h='100vh' p='1rem 2rem 1rem 1rem' overflowX='hidden'>
       <Head>
         <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
@@ -109,143 +106,37 @@ export default function Home(props) {
       </Head>
       <Grid w='100%' className={classes.grid}>
         <GridItem w='100%'>
-          <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
-            <GridItem colSpan={1} mr='0.25rem'>
-              <Button w='90%' onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
-            </GridItem>
-
-            <GridItem>
-              <Menu>
-                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} w='100%'>
-                  {country ? country : 'Select a Country'}
-                </MenuButton>
-                <MenuList maxW='12rem'>
-                  <MenuItem
-                    onClick={() => {
-                      setCountry('Nigeria');
-                      setClicked(true);
-                    }}
-                  >
-                    Nigeria
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setCountry('Ethiopia');
-                      setClicked(true);
-                    }}
-                  >
-                    Ethiopia
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setCountry('Tanzania');
-                      setClicked(true);
-                    }}
-                  >
-                    Tanzania
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </GridItem>
-            <GridItem>
-              <Menu>
-                <MButton
-                  country={country}
-                  text={
-                    enhance ? enhance === '0' ? (
-                      'Country'
-                    ) : enhance === '1' ? (
-                      types.lvl1
-                    ) : enhance === '2' ? (
-                      types.lvl2
-                    ) : null : (
-                      'Boundaries'
-                    )
-                  }
-                />
-                <MenuList maxW='12rem'>
-                  <MenuItem onClick={() => setEnhance('0')}>Country</MenuItem>
-                  <MenuItem onClick={() => setEnhance('1')}>{types.lvl1}</MenuItem>
-                  <MenuItem onClick={() => setEnhance('2')}>{types.lvl2}</MenuItem>
-                </MenuList>
-              </Menu>
-            </GridItem>
-            <GridItem>
-              <Menu closeOnSelect={false}>
-                <MButton country={country} text='Crops' />
-
-                <MenuList maxW='12rem'>
-                  {country &&
-                    countryCrops.map((crop, index) => {
-                      return (
-                        <MenuItem key={index}>
-                          <Checkbox
-                            isChecked={Array.isArray(currCrops) && currCrops.indexOf(crop) !== -1}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                const tempCurrCrops = currCrops.slice();
-                                tempCurrCrops.push(crop);
-                                setCurrCrops(tempCurrCrops);
-                              }
-                              else if (currCrops.indexOf(crop) >= 0) {
-                                const tempCurrCrops = currCrops.filter((t) => t !== crop);
-                                setCurrCrops(tempCurrCrops);
-                              }
-                            }}
-                          >
-                            {crop[0].toUpperCase() + crop.slice(1, crop.length)}
-                          </Checkbox>
-                        </MenuItem>
-                      );
-                    })}
-                </MenuList>
-              </Menu>
-            </GridItem>
-            <GridItem>
-              <Menu>
-                <MButton
-                  country={country}
-                  text={filter ? filter[0] === 'c' ? 'Collected' : filter[0] === 'n' ? 'Planned' : 'All' : 'Filter'}
-                />
-
-                <MenuList maxW='12rem'>
-                  <MenuItem onClick={() => setFilter('all')}>
-                    All
-                    <span style={{ fontStyle: 'italic', color: 'grey', marginLeft: 'auto', marginRight: '0' }}>
-                      default
-                    </span>
-                  </MenuItem>
-                  <MenuItem onClick={() => setFilter('collected')}>Collected</MenuItem>
-                  <MenuItem onClick={() => setFilter('nCollected')}>Planned</MenuItem>
-                </MenuList>
-              </Menu>
-            </GridItem>
-            <GridItem colSpan={3} />
-          </Grid>
-
-          <CountryContext.Provider value={country}>
-            <CropContext.Provider value={currCrops}>
-              <ClickContext.Provider value={{ clicked, setClicked }}>
-                <Map
-                  enhance={enhance}
-                  date={[startDate, endDate]}
-                  filter={filter}
-                  points={props}
-                  data={data}
-                  types={types}
-                />
-              </ClickContext.Provider>
-            </CropContext.Provider>
+          <CountryContext.Provider value={{ country, setCountry }}>
+            <ClickContext.Provider value={{ clicked, setClicked }}>
+              <CurrCropContext.Provider value={{ currCrops, setCurrCrops }}>
+                <TypesContext.Provider value={types}>
+                  <EnhanceContext.Provider value={{ enhance, setEnhance }}>
+                    <FilterContext.Provider value={{ filter, setFilter }}>
+                      <CountryCropContext.Provider value={countryCrops}>
+                        <Navbar />
+                      </CountryCropContext.Provider>
+                    </FilterContext.Provider>
+                  </EnhanceContext.Provider>
+                </TypesContext.Provider>
+              </CurrCropContext.Provider>
+              <Map
+                date={[startDate, endDate]}
+                filter={filter}
+                points={props}
+                data={data}
+                crops={currCrops}
+                types={types}
+                enhance={enhance}
+              />
+            </ClickContext.Provider>
           </CountryContext.Provider>
         </GridItem>
 
-        <GridItem minW='36vw' h='40vh' ml='3rem'>
+        <GridItem minW='36vw' h='40vh' className={classes.rightPanel}>
           <Center w='100%'>
             <RangeSlider
               maxW='15rem'
-              mt='2rem'
+              mt='3rem'
               defaultValue={[0, dateDifference]}
               min={0}
               max={dateDifference}
@@ -293,19 +184,17 @@ export default function Home(props) {
               </Tooltip>
             </RangeSlider>
           </Center>
-          <Box>
-            {country && (
-              <DateContext.Provider value={[startDate, endDate]}>
-                <CropContext.Provider value={countryCrops}>
-                  <DataContext.Provider value={props[country + 'Points'].features}>
-                    <Dashboard country={country}>
-                      <Histogram color={colorMode} />
-                    </Dashboard>
-                  </DataContext.Provider>
-                </CropContext.Provider>
-              </DateContext.Provider>
-            )}
-          </Box>
+          {country && (
+            <DateContext.Provider value={[startDate, endDate]}>
+              <CountryCropContext.Provider value={countryCrops}>
+                <DataContext.Provider value={props[country + 'Points'].features}>
+                  <Dashboard color={colorMode}>
+                    <Histogram color={colorMode} />
+                  </Dashboard>
+                </DataContext.Provider>
+              </CountryCropContext.Provider>
+            </DateContext.Provider>
+          )}
         </GridItem>
       </Grid>
     </Flex>
