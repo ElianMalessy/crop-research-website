@@ -8,7 +8,6 @@ import { CountryContext } from '../../pages';
 
 export default function Map({ date, filter, points, data, enhance, types, crops }) {
   const { country } = useContext(CountryContext);
-
   const [locations, setLocations] = useState([]);
   const [bounds, setBounds] = useState([[-37.4134523712, -23.357199357], [39.122135968, 54.5994710922]]);
 
