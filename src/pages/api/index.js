@@ -2,6 +2,8 @@
 import axios from 'axios';
 
 async function handler(req, res) {
+  res.setHeader('Cache-Control', 'public, s-maxage=43200, stale-while-revalidate=60');
+
   try {
     const data = await axios
       .all([

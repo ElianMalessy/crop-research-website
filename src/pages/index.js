@@ -15,8 +15,7 @@ import {
   Tooltip,
   Center,
   useColorModeValue,
-  useColorMode,
-  Box
+  useColorMode
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { subdivisions } from '../components/Map/subdivisions';
@@ -201,10 +200,11 @@ export default function Home(props) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ res }) {
   let TanzaniaPoints;
   let NigeriaPoints;
   let EthiopiaPoints;
+  res.setHeader('Cache-Control', 'public, s-maxage=43200, stale-while-revalidate=60');
 
   try {
     const data = await axios

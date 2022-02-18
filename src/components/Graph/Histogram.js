@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import useD3 from '../Hooks/useD3';
 import { useEffect, useRef, useContext } from 'react';
-import useWindowDimensions from '../Hooks/useWindowDimensions';
 import { DataContext, CountryCropContext, DateContext } from '../../pages';
 
 export default function Histogram({ color }) {
@@ -10,8 +9,9 @@ export default function Histogram({ color }) {
   const data = useContext(DataContext);
   const crops = useContext(CountryCropContext);
   const date = useContext(DateContext);
-  const { height, width } = useWindowDimensions();
-  width = 1200;
+
+  const height = 900;
+  const width = 1500;
 
   useEffect(
     () => {
@@ -37,7 +37,7 @@ export default function Histogram({ color }) {
 
   const ref = useD3(
     (svg) => {
-      if (!height) return;
+      if (!height || !data) return;
       svg.selectAll('text.y').remove();
       svg.selectAll('text.x').remove();
 
@@ -84,7 +84,7 @@ export default function Histogram({ color }) {
         .attr('class', 'x label')
         .attr('text-anchor', 'end')
         .attr('x', width / 1.9)
-        .attr('y', height * 1.1)
+        .attr('y', height * 1.06)
         .attr('font-size', '2rem')
         .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .text('crops');
@@ -105,7 +105,7 @@ export default function Histogram({ color }) {
   return (
     <svg
       ref={ref}
-      viewBox='0 0 1150 815'
+      viewBox='0 0 1450 975'
       style={{
         height: '100%',
         maxWidth: '100%',
