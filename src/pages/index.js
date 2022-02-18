@@ -102,6 +102,10 @@ export default function Home(props) {
         <title>Africa Crop Data Collection and Research Map</title>
         <link rel='icon' href='/favicon.ico' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <meta
+          name='description'
+          content='An interactive Map, Data-table, and Graph using African crop data collected by the IMAGE team which is funded by the Gates Foundation'
+        />
       </Head>
       <Grid w='100%' className={classes.grid}>
         <GridItem w='100%'>
@@ -136,6 +140,8 @@ export default function Home(props) {
             <RangeSlider
               maxW='15rem'
               mt='3rem'
+              aria-label={('min', 'max')}
+              aria-valuetext={(startDate, endDate)}
               defaultValue={[0, dateDifference]}
               min={0}
               max={dateDifference}

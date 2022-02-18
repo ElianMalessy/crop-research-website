@@ -37,11 +37,10 @@ export default function Histogram({ color }) {
 
   const ref = useD3(
     (svg) => {
-      if (!height || !data) return;
       svg.selectAll('text.y').remove();
       svg.selectAll('text.x').remove();
 
-      const margin = { top: 0, right: 90, bottom: 0, left: 90 };
+      const margin = { top: 0, right: 90, bottom: 0, left: 135 };
       const x = d3.scaleBand().domain(crops).rangeRound([margin.left, width - margin.right]).padding(0.1);
 
       const y = d3
@@ -52,7 +51,7 @@ export default function Histogram({ color }) {
       const xAxis = (g) =>
         g
           .attr('transform', `translate(0,${height})`)
-          .style('font-size', '1.5rem')
+          .style('font-size', '2rem')
           .style('color', 'white')
           .call(d3.axisBottom(x));
 
@@ -60,7 +59,7 @@ export default function Histogram({ color }) {
         g
           .attr('transform', `translate(${margin.left},0)`)
           .style('color', 'steelblue')
-          .style('font-size', '1.25rem')
+          .style('font-size', '2rem')
           .call(d3.axisLeft(y).ticks(null, 's'))
           .call((g) => g.select('.domain').remove());
 
@@ -83,9 +82,9 @@ export default function Histogram({ color }) {
         .append('text')
         .attr('class', 'x label')
         .attr('text-anchor', 'end')
-        .attr('x', width / 1.9)
-        .attr('y', height * 1.06)
-        .attr('font-size', '2rem')
+        .attr('x', width / 1.8)
+        .attr('y', height * 1.075)
+        .attr('font-size', '3rem')
         .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .text('crops');
       svg
@@ -93,7 +92,7 @@ export default function Histogram({ color }) {
         .attr('class', 'y label')
         .attr('text-anchor', 'end')
         .attr('x', -height / 2.75)
-        .attr('font-size', '2rem')
+        .attr('font-size', '3rem')
         .attr('dy', '1em')
         .attr('fill', color === 'light' ? 'black' : '#CBD5E0')
         .attr('transform', 'rotate(-90)')

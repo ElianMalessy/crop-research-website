@@ -27,7 +27,9 @@ export default function SelectorButtons({ SeparatorComponent }) {
   return (
     <Fragment>
       <SeparatorComponent>
-        <Button onClick={toggleColorMode}>{colorMode === 'light' ? <MoonIcon /> : <SunIcon />}</Button>
+        <Button onClick={toggleColorMode} aria-label='colorMode Selector'>
+          {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+        </Button>
       </SeparatorComponent>
       <SeparatorComponent>
         <Menu>

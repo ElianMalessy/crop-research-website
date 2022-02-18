@@ -6,17 +6,17 @@ import Backdrop from './Backdrop';
 import SelectorButtons from './SelectorButtons';
 
 export default function Navbar() {
-  const { height, width } = useWindowDimensions();
+  const { width } = useWindowDimensions();
   const [isOpen, setIsOpen] = useState(false);
   useEffect(
     () => {
-      if (width > 620 && isOpen) setIsOpen(false);
+      if (width > 640 && isOpen) setIsOpen(false);
     },
     [isOpen, width]
   );
   return (
     <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
-      {width < 620 && (
+      {width < 640 && (
         <Fragment>
           <MenuToggle isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
           {isOpen && (
@@ -28,7 +28,7 @@ export default function Navbar() {
           )}
         </Fragment>
       )}
-      {width > 620 && <SelectorButtons SeparatorComponent={GridItem} />}
+      {width > 640 && <SelectorButtons SeparatorComponent={GridItem} />}
       <GridItem colSpan={3} />
     </Grid>
   );
