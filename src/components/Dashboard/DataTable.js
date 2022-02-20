@@ -17,10 +17,10 @@ export default function DataTable() {
         const d = new Date(values.date);
         for (let j = 0; j < crops.length; j++) {
           if (d >= new Date(date[0]) && d <= new Date(date[1]) && values[crops[j]] >= 100) {
-            tempCropVals[j][0] += values[crops[j]];
+            tempCropVals[j][0] += 1;
           }
           else if (d > new Date(date[1]) && values[crops[j]] >= 100) {
-            tempCropVals[j][1] += values[crops[j]];
+            tempCropVals[j][1] += 1;
           }
         }
       }
@@ -44,8 +44,8 @@ export default function DataTable() {
               return (
                 <Tr key={index}>
                   <Td>{crop[0].toUpperCase() + crop.slice(1, crop.length)}</Td>
-                  <Td isNumeric>{cropVals[index][0] + ' (ha)'} </Td>
-                  <Td isNumeric>{cropVals[index][1] + ' (ha)'} </Td>
+                  <Td isNumeric>{cropVals[index][0]} </Td>
+                  <Td isNumeric>{cropVals[index][1]} </Td>
                 </Tr>
               );
             })}

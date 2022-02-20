@@ -15,13 +15,13 @@ export default function Navbar() {
     [isOpen, width]
   );
   return (
-    <Grid templateColumns='repeat(10, 1fr)' gap={2} zIndex='10'>
+    <Grid templateColumns='repeat(10, 1fr)' gap={2}>
       {width < 640 && (
         <Fragment>
           <MenuToggle isOpen={isOpen} toggle={() => setIsOpen(!isOpen)} />
           {isOpen && (
             <Backdrop>
-              <VStack spacing={4}>
+              <VStack spacing={4} position='relative'>
                 <SelectorButtons SeparatorComponent={Box} />
               </VStack>
             </Backdrop>

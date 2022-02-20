@@ -23,7 +23,7 @@ export default function Histogram({ color }) {
         const values = data[i].properties;
         const d = new Date(values.date);
         for (let j = 0; j < crops.length; j++) {
-          if (d >= new Date(date[0]) && d <= new Date(date[1])) cropValues.current[j] += values[crops[j]];
+          if (d >= new Date(date[0]) && d <= new Date(date[1]) && values[crops[j]] >= 100) cropValues.current[j] += 1;
         }
       }
 

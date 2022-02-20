@@ -17,8 +17,9 @@
 .homeMap {
   margin-top: 1rem;
   min-width: 50vw;
+  max-width: 90vw;
   z-index: 0;
-  height: 89vh;
+  height: 87vh;
 }
 .grid {
   grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)) !important;
@@ -39,7 +40,7 @@
   }
   .homeMap {
     margin-top: 0;
-    height: 84.5vh;
+    height: 50vh;
   }
 }
 .backdrop {
@@ -53,6 +54,6 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  z-index: 98;
+  z-index: 1801;
   margin: 0;
 }
