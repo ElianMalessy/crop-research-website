@@ -27,7 +27,7 @@ export default function Map({ date, filter, points, data, enhance, types, crops 
     (countryPoints) => {
       const locations = [];
       countryPoints.features.forEach((dataPoint) => {
-        const matchingCrops = true;
+        const matchingCrops = false;
         for (const [key, value] of Object.entries(dataPoint.properties)) {
           if (
             key !== 'ID' &&
@@ -36,10 +36,13 @@ export default function Map({ date, filter, points, data, enhance, types, crops 
             key !== 'NAME_2' &&
             key !== 'NAME_3' &&
             key !== 'name' &&
-            crops.indexOf(key) === -1 &&
-            value !== 0
+            crops.indexOf(key) !== -1 &&
+            value >= 100
           ) {
-            matchingCrops = false;
+            // if a crop is not in the array, only if it is alone with all other crops not existing (less than 100) will it not be shown
+            // e.g, countryCrops = [maize, cassava, cowpea, rice], currCrops = [maize, cassava]
+            // if this object has a maize or cassava with a value greater than 100, then it will be shown
+            matchingCrops = true;
           }
         }
         if (matchingCrops) {
